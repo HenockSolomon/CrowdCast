@@ -8,7 +8,11 @@ import {
 
 
 import App from './App';
-
+import LoginSignup from './Pages/LoginSignup';
+import UserProfile from './Pages/UserProfile';
+import CreatePost from './Pages/CreatePost';
+import AboutUs from './Pages/AboutUs';
+import HomePage from './HomePage';
 
 
 
@@ -18,11 +22,26 @@ import App from './App';
 const router = createBrowserRouter([
   {
     path: "/",
-    element:<App/>,
-  }
+    element:<HomePage/>,
+  },
+  {
+    path: "/LoginSignup",
+    element:<LoginSignup/>,
+  },
+  {
+    path: "/UserProfile",
+    element:<UserProfile />,
+  },
+  {
+    path: "/CreatePost",
+    element:<CreatePost />,
+  },
+  {
+    path: "/About",
+    element:<AboutUs />,
+  },
+
 ]);
-
-
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
