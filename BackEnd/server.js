@@ -10,7 +10,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({credentials:true, origin:'http://localhost:3000'}));
 dotenv.config();
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET_KEY;
@@ -111,7 +111,26 @@ app.post('/login', async (req, res) => {
 
 
 
+app.get('/userprofile', async (req, res) => {
+  try {
+    const token = req.cookies.token; // assuming the name of the cookie is "token"
+    if (!token) {
+      return res.status(401).json({ msg: 'Unauthorized' });
+    }
+    const decodedToken = jwt.verify(token, secret);
+    res.json(decodedToken);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Internal Server Error' });
+  }
+});
 
+
+
+
+app.post('/logout', (req, res) => {
+  res.cookie('token','').json({ message:'logged out'}); 
+});
 
 
 

@@ -25,19 +25,19 @@ const router = createBrowserRouter([
     element:<HomePage/>,
   },
   {
-    path: "/LoginSignup",
+    path: "/loginsignup",
     element:<LoginSignup/>,
   },
   {
-    path: "/UserProfile",
+    path: "/userprofile",
     element:<UserProfile />,
   },
   {
-    path: "/CreatePost",
+    path: "/createpost",
     element:<CreatePost />,
   },
   {
-    path: "/About",
+    path: "/about",
     element:<AboutUs />,
   },
 

@@ -1,28 +1,79 @@
-import React, { useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { UserContext } from './Props/UserInfo';
+import axios from 'axios';
+import api from './Props/API';
 
 export default function Navbar() {
-  const location = useLocation();
-  const { authenticated, user, handleLogout } = useContext(UserContext);
+  const { setUserInfo, userInfo } = useContext(UserContext);
 
-  const showSignupNavItems3 = location.pathname === '/LoginSignup';
-  const showSignupNavItems2 = location.pathname === '/CreatePost';
-  const showSignupNavItems1 = location.pathname === '/About';
+  // api.get('/userprofile').then(response => {
+  //   console.log(response.data);
+  // });
+  // useEffect(() => {
+  //   axios.get('http://localhost:8000/userprofile', {
+  //     withCredentials: true
+  //   })
+  //   .then(response => {
+  //     if (setUserInfo) {
+  //       setUserInfo(response.data);
+  //     }
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //   });
+  // }, [setUserInfo]);
+  
+
+//console.log(userInfo)
+
+  function logout() {
+    fetch('http://localhost:8000/logout', {
+      credentials: 'include',
+      method: 'POST',
+    });
+    if (setUserInfo) {
+      setUserInfo(null);
+    }
+  }
+
+  const username = userInfo?.username;
+//console.log(username);
+
 
   return (
     <div className="navbar">
-      <div className="navbarLogo">
-        <nav className="logo"><Link to='/'>Crowd Cast</Link></nav>
-      </div>
+      <header>
+        <div className="navbarLogo logo">
+          
+            <Link to="/">Crowd Cast</Link>
+        
+        </div>
 
-      <ul className="navbarMenu">
-        {!showSignupNavItems1 && <li><Link to="/About" className='about'>About Us</Link></li>}
-        {!showSignupNavItems2 && <li><Link to="/CreatePost" className='CreatePost'>Create Post</Link></li>}
-        {authenticated && user && <li><span className='welcome'>Welcome {user.username}</span></li>}
-        {authenticated && <li><button onClick={handleLogout}>Log out</button></li>}
-        {!authenticated && !showSignupNavItems3 && <li><Link to="/LoginSignup" className='LoginSignup'>Login/Signup</Link></li>}
-      </ul>
+        <nav>
+          {username ? (
+            <>
+              <ul className="navbarMenu">
+                <li>
+                  <Link to="/createpost" className="CreatePost">Create Post</Link>
+                </li>
+                <li>
+                  <span className="welcome">Welcome {username}</span>
+                </li>
+                <li>
+                  <Link to="/" onClick={logout}>
+                    Logout
+                  </Link>
+                </li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <li><Link to="/loginsignup" className="LoginSignup"> Login/Signup </Link></li>
+            </>
+          )}
+        </nav>
+      </header>
     </div>
   );
 }

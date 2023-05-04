@@ -1,18 +1,16 @@
 import { React, useState } from "react";
 import Navbar from "../HeaderPublic";
-import { Navigate } from "react-router-dom";
-import { useLocation, Link, useNavigate  } from "react-router-dom";
-import UserProfile from "./UserProfile";
+import {  useNavigate  } from "react-router-dom";
+import axios from "axios";
 
 
 export default function LoginSignup (){
-    const location = useLocation();
     const navigate = useNavigate();
     const [username, setUsername]= useState('');
     const [email, setEmail]= useState('');
     const [password, setPassword]= useState('');
     const [redirect, setRedirect]= useState(false);
-
+    // const history = useHistory();
 
 // this is for the signup page to sign up the user and take user information
 
@@ -26,15 +24,21 @@ export default function LoginSignup (){
             });
                 console.log(response);
             if (response.status === 200){
+                window.localStorage.setItem("token", response.data);
                 setRedirect(true);
                     console.log('Successfully registered');
+                    alert('Successfully registered');
                     navigate ('/UserProfile');
             }else{
                 const error = await response.json();
-                console.log(error.msg);
+                console.log(error);
+                console.log('Signup Failed: username or email already exists');
+                alert('Signup Failed: username or email already exists');
             }
        }catch (error){
         console.log(error);
+        console.log('signup Failed either because you used the invalid username or email')
+        alert('Signup Failed either because you used the invalid username or email')
        }
       
     }
@@ -43,62 +47,60 @@ export default function LoginSignup (){
     
 async function Login(e){
     e.preventDefault();
-try{
-const Response = await fetch('http://localhost:8000/login',{
-    method: 'POST',
-    body: JSON.stringify({username, password}),
-    headers: { 'Content-Type': 'application/json'},
-});
-    if(Response.status === 200){
-        const data = await Response.json();
+    try {
+        const response = await axios.post('http://localhost:8000/login', {
+            username,
+            password
+        }).then(function (response) {
+            console.log(response);
+            navigate('/UserProfile');
+            if(response.status === 200){
+                window.localStorage.setItem("token", response.data);
+                
+                alert('Log in successful');
+                
+            } else {
+                console.log(response.data);
+                alert("Username or password doesn't match");
+            }
+        })
+        console.log(username);
+      
+    } catch(error){
         
-        setRedirect(true);
-        navigate ('/UserProfile');
-        console.log(data);
-    }else{
-        const error = await Response.json();
-        console.log(error.msg);
+        alert("Invalid Username or password");
     }
-
-}catch(error){
-    console.log(error);
-}
-
-
 }
 
 
 
 // return of the component
     
-    return redirect ? <Navigate to='/UserProfile' username={username} />:(
-        <div>
-            <Navbar>
-                {location.pathname === '/LoginSignup' ?
-                    <>
-                        <li><Link to="/About" className='about'>About Us</Link></li>
-                        <li><Link to="/UserProfile">{username}</Link></li>
-                        <li><Link to="/CreatePost" className='CreatePost'>Create Post</Link></li>
-                    </>
-                    : null
-                }
-            </Navbar>
-            <h1 className="heading">If you have an account </h1>
-
-
+    return(
+        <>
+            
+          
+            
+            <Navbar></Navbar>
+            <h1 className="heading">If you have an account</h1>
             <h1 className="loginHeadline">Login into your account</h1>
             <form className="login" onSubmit={Login}>
-                <input type="text" 
-                    placeholder="Username"
-                    value={username}
-                    onChange={((e)=> setUsername(e.target.value))}/>
-                <input type="password" 
-                    placeholder="Password" 
-                    value={password}
-                    onChange={((e)=> setPassword(e.target.value))}/>
-                <button>Login<Link to={'/UserProfile'}/>  </button>
-                
+                <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                />
+                <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="submit">Login</button>
             </form>
+    
+
 
             <h1 className="heading">If you want to create an account </h1>
 
@@ -116,9 +118,9 @@ const Response = await fetch('http://localhost:8000/login',{
                     placeholder="Password" 
                     value={password}
                     onChange={((e)=> setPassword(e.target.value))}/>
-                <button>Signup</button>
+                <button type="submit">Signup</button>
             
             </form>
-        </div>
+    </>
     );
 }
