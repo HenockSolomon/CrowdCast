@@ -1,10 +1,15 @@
-import React, { useContext } from "react";
-import Navbar from "../HeaderPublic";
-import { UserContext } from "../Props/UserInfo";
+// UserProfile.js
+
+import React, { useState, useEffect } from 'react';
+import Navbar from '../HeaderPublic';
 
 export default function UserProfile() {
-  const { userInfo } = useContext(UserContext);
-  const username = userInfo?.username;
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const response = JSON.parse(window.localStorage.getItem('response'));
+    setUsername(response.username);
+  }, []);
 
   return (
     <div>

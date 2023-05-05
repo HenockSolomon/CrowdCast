@@ -45,32 +45,29 @@ export default function LoginSignup (){
 
 // this is for the login page to login the user and take user information
     
-async function Login(e){
+// Login.js
+
+async function Login(e) {
     e.preventDefault();
     try {
-        const response = await axios.post('http://localhost:8000/login', {
-            username,
-            password
-        }).then(function (response) {
-            console.log(response);
-            navigate('/UserProfile');
-            if(response.status === 200){
-                window.localStorage.setItem("token", response.data);
-                
-                alert('Log in successful');
-                
-            } else {
-                console.log(response.data);
-                alert("Username or password doesn't match");
-            }
-        })
-        console.log(username);
-      
-    } catch(error){
-        
-        alert("Invalid Username or password");
+      const response = await axios.post('http://localhost:8000/login', {
+        username,
+        password
+      });
+      console.log(response.data);
+      window.localStorage.setItem('response', JSON.stringify(response.data));
+      navigate('/UserProfile');
+      if (response.status === 200) {
+        window.localStorage.setItem('token', response.data);
+        alert('Log in successful');
+      } else {
+        alert("Username or password doesn't match");
+      }
+    } catch (error) {
+      alert('Invalid Username or password');
     }
-}
+  }
+  
 
 
 
