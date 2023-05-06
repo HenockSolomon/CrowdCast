@@ -1,17 +1,24 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-
-export function handleLogout() {
-  // Clear user information (e.g. authentication token)
-  localStorage.removeItem('authToken');
-
-  // Redirect to home page
-  const history = useHistory();
-  history.push('/');
-}
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { UserContext } from '../Props/UserInfo';
+import axios from 'axios';
+import api from '../Props/API';
 
 export default function Navbar() {
-  // ...
+  const { setUserInfo, userInfo } = useContext(UserContext);  
+
+  function handleLogout() {
+    // Clear user information (e.g. authentication token)
+    localStorage.removeItem('token');
+
+    // Clear user information in context
+    setUserInfo(null);
+
+    // Redirect to home page
+    window.location.href = '/';
+  }
+
+  const username = userInfo?.username;
 
   return (
     <div className="navbar">
