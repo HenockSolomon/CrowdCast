@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from './Props/UserInfo';
+import './App.css';
 
 
 export default function Navbar() {
@@ -55,18 +56,18 @@ export default function Navbar() {
             </li>
             <li>
               <Link to="/userprofile">
-                <span className="welcome"> {username}'s Profile</span>
+                <span className="userprofile"> {username}'s Profile</span>
               </Link>
             </li>
             <li>
-              <Link to="/" onClick={Logout}>
+              <Link to="/" onClick={Logout} className='logout'>
                 Logout
               </Link>
             </li>
           </>
         ) : (
           <li>
-            <Link to="/loginsignup" className="LoginSignup">
+            <Link to="/loginsignup" className="loginsignup">
               Login/Signup
             </Link>
           </li>

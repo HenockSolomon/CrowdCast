@@ -13,7 +13,8 @@ export default function LoginSignup (){
     const [redirect, setRedirect]= useState(false);
     
     const { setUserInfo} = useContext(UserContext);
-    // const history = useHistory();
+   
+
 
 // this is for the signup page to sign up the user and take user information
 
@@ -32,7 +33,7 @@ export default function LoginSignup (){
                   setRedirect(true);
                   console.log("Successfully registered");
                   alert("Successfully registered");
-                  navigate("/userprofile");
+                  navigate("/loginsignup");
                 } else {
                   const error = await response.json();
                   console.log(error);
@@ -71,9 +72,25 @@ async function Login(ev) {
     
   } else {
     alert('wrong credentials');
+    navigate('/loginsignup');
   }
 }
 
+function toggleForm() {
+  const loginForm = document.querySelector('.login');
+  const registerForm = document.querySelector('.register');
+  const heading = document.querySelector('.heading');
+
+  if (loginForm.style.display === 'none') {
+    loginForm.style.display = 'block';
+    registerForm.style.display = 'none';
+    heading.textContent = 'If you want to create an account';
+  } else {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+    heading.textContent = 'If you already have an account';
+  }
+}
 
 
 
@@ -86,9 +103,10 @@ async function Login(ev) {
           
             
             <Navbar></Navbar>
-            <h1 className="heading">If you have an account</h1>
-            <h1 className="loginHeadline">Login into your account</h1>
-            <form className="login" onSubmit={Login}>
+           
+       
+            <form className='login' onSubmit={Login}> 
+            <h1 className="heading">If you have an account Log in here:</h1>
                 <input
                 type="text"
                 placeholder="Username"
@@ -101,14 +119,14 @@ async function Login(ev) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Login</button>
+                <button className="btn" type="submit">Login</button>
             </form>
     
 
 
-            <h1 className="heading">If you want to create an account </h1>
+            <h1 className="heading forNew" onClick={toggleForm}>If you want to create a new account: </h1>
 
-            <form className="register" onSubmit={Signup}>
+            <form className='register' onSubmit={Signup}>
                 <input 
                     type="text" 
                     placeholder="Username"
@@ -122,9 +140,10 @@ async function Login(ev) {
                     placeholder="Password" 
                     value={password}
                     onChange={((e)=> setPassword(e.target.value))}/>
-                <button type="submit">Signup</button>
-            
+                <button type="submit" className="btn">Signup</button>
+                <h1 className="heading forNew" onClick={toggleForm}> go back to login </h1>
             </form>
+            
     </>
     );
 }
