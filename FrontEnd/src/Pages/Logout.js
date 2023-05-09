@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../Props/UserInfo';
-import axios from 'axios';
-import api from '../Props/API';
+
 
 export default function Navbar() {
   const { setUserInfo, userInfo } = useContext(UserContext);  

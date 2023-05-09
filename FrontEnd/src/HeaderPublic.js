@@ -1,61 +1,78 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from './Props/UserInfo';
-import axios from 'axios';
 
 
 export default function Navbar() {
-  const { setUserInfo, userInfo } = useContext(UserContext);  
+  
+  const { setUserInfo} = useContext(UserContext);
+  const [username, setUsername] = useState('');
 
-  function handleLogout() {
+
+  useEffect(() => {
+    fetch('http://localhost:8000/userprofile', {
+      credentials: 'include',
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(userInfo => {
+        setUsername(userInfo.username); // set the username state
+        console.log(username); // log username to the console
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  }, [setUsername]);
+
+
+
+
+  function Logout() {
     fetch('http://localhost:8000/logout', {
       credentials: 'include',
       method: 'POST',
-    })
-    .then(response => {
-      if (response.ok) {
-        setUserInfo(null);
-      } else {
-        throw new Error('Failed to log out');
-      }
-    })
-    .catch(error => {
-      console.error(error);
     });
+    setUserInfo(null);
   }
-  const username = userInfo?.username;
-
+  
   return (
-    <div className="navbar">
-      <header>
-        <div className="navbarLogo logo">
-          <Link to="/">Crowd Cast </Link>
-        </div>
-
-        <nav>
-          {username ? (
-            <>
-              <ul className="navbarMenu">
-                <li>
-                  <Link to="/createpost" className="CreatePost">Create Post</Link>
-                </li>
-                <li>
-                  <span className="welcome">Welcome {username}</span>
-                </li>
-                <li>
-                  <Link to="/" onClick={handleLogout}>
-                    Logout
-                  </Link>
-                </li>
-              </ul>
-            </>
-          ) : (
-            <>
-              <li><Link to="/loginsignup" className="LoginSignup"> Login/Signup </Link></li>
-            </>
-          )}
-        </nav>
-      </header>
-    </div>
+    <nav className="navbar">
+      <div className="navbarLogo logo">
+        <Link to="/">Crowd Cast </Link>
+      </div>
+      <ul className="navbarMenu">
+       
+        {username ? (
+          <>
+            <li>
+              <Link to="/createpost" className="CreatePost">
+                Create Post
+              </Link>
+            </li>
+            <li>
+              <Link to="/userprofile">
+                <span className="welcome"> {username}'s Profile</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/" onClick={Logout}>
+                Logout
+              </Link>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link to="/loginsignup" className="LoginSignup">
+              Login/Signup
+            </Link>
+          </li>
+        )}
+      
+      </ul>
+    </nav>
   );
 }

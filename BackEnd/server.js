@@ -53,12 +53,13 @@ app.post('/signup', async (req, res) => {
       return res.status(409).json({ msg: 'Username already exists' });
     }
     
-    if (!existingUser) {const newUserData = await UserData.create({
+    if (!existingUser) {
+      const userData = await UserData.create({
       username,
       email,
       password:bcrypt.hashSync(password,salt)
     });
-    res.status(200).json(newUserData);
+    res.status(200).json(userData);
   }
 
   } catch (error) {
@@ -70,7 +71,6 @@ app.post('/signup', async (req, res) => {
 
 
 //this is post request to be checked on postman the user data inputs for login
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -85,26 +85,34 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ msg: 'Invalid username or password' });
     }
 
-    const passwordMatch = await bcrypt.compare(password, userData.password);
+    const passwordMatch = await bcrypt.compareSync(password, userData.password);
 
     if (!passwordMatch) {
       return res.status(401).json({ msg: 'Invalid username or password' });
     }
 
-    const token = jwt.sign({ username, id: userData._id, email:userData.email }, secret, { expiresIn: '10h' });
-    res.cookie('token', token, { httpOnly: true}); 
+    if (passwordMatch) {
+     jwt.sign({ username, id: userData._id, email: userData.email, password: userData.password }, secret, {}, (err, token) => {
+      if (err) throw err;
 
-    return res.status(200).json({
-      id: userData._id,
-      username,
-      email:userData.email,
-      msg: 'Successfully logged in',
+      res.cookie('token', token).json({
+       
+        username,
+        id: userData._id,
+        email: userData.email,
+        password : userData.password,
+        msg: 'Successfully logged in',
+      });
     });
+    } else {
+      res.json({ status: 'error', userData: false });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' }); 
   }
-}); 
+});
+
 
  
 
@@ -113,9 +121,9 @@ app.post('/login', async (req, res) => {
 
 app.get('/userprofile', async (req, res) => {
   try {
-    const token = req.cookies.token; // assuming the name of the cookie is "token"
+    const {token} = req.cookies; // assuming the name of the cookie is "token"
     if (!token) {
-      return res.status(401).json({ msg: 'Unauthorized' });
+      return res.status(401).json({ msg: 'Unauthorized access' });
     }
     const decodedToken = jwt.verify(token, secret);
     res.json(decodedToken);
@@ -124,6 +132,10 @@ app.get('/userprofile', async (req, res) => {
     res.status(500).json({ msg: 'Internal Server Error' });
   }
 });
+
+
+
+
 
 
 
