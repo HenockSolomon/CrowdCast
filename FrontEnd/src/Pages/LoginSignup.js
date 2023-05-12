@@ -33,7 +33,7 @@ export default function LoginSignup (){
                   setRedirect(true);
                   console.log("Successfully registered");
                   alert("Successfully registered");
-                  navigate("/loginsignup");
+                  await Login(e);
                 } else {
                   const error = await response.json();
                   console.log(error);
