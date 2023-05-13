@@ -6,8 +6,14 @@ import About from './Pages/AboutUs';
 import CreatePost from './Pages/CreatePost';
 import LoginSignup from './Pages/LoginSignup';
 import UserProfile from './Pages/UserProfile';
+
 import HomePage from './HomePage';
 import { UserContextProvider } from './Props/UserInfo';
+import PostPage from "./Pages/postPage";
+import EditPost from "./Pages/editPost";
+import Layout from './layout';
+import IndexPage from './Pages/indexPage';
+
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -27,11 +33,14 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Layout />} />
+          <Route index element={<IndexPage />} />
           <Route path="/About" element={<About />} />
           <Route path="/CreatePost" element={<CreatePost />} />
           <Route path="/LoginSignup" element={<LoginSignup handleLogin={handleLogin} />} />
           <Route path="/UserProfile" element={<UserProfile handleLogout={handleLogout} />} />
+          <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/edit/:id" element={<EditPost />} />
         </Routes>
       </Router>
     </UserContextProvider>

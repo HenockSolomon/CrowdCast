@@ -30,6 +30,7 @@ export default function CreatePost() {
         data.set('eventType', eventType);
         data.set('coverImg', coverImg);
         data.set('postCode', postCode);
+        data.set('privetPublic', privetPublic);
         data.set('summary', summary);
         data.set('content', content);
         data.set('file', file[0]);

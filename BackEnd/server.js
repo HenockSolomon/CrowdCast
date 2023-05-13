@@ -7,6 +7,10 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const Post= require('./models/Posts');
+const multer = require('multer');
+const middleware= multer({dest : './middle'});
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
@@ -15,6 +19,8 @@ dotenv.config();
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET_KEY;
 app.use(cookieParser());
+app.use('/middle', express.static(__dirname + '/middle'));
+
 
 
 // this is for connecting to the database
@@ -24,7 +30,7 @@ app.use(cookieParser());
     console.log('Connected to database');
   } catch (error) {
     console.error(error);
-  }
+  } 
 })();
 
 
@@ -111,14 +117,10 @@ app.post('/login', async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' }); 
   }
-});
+}); 
 
 
- 
-
-
-
-
+// this is for userprofile only
 app.get('/userprofile', async (req, res) => {
   try {
     const {token} = req.cookies; // assuming the name of the cookie is "token"
@@ -132,6 +134,106 @@ app.get('/userprofile', async (req, res) => {
     res.status(500).json({ msg: 'Internal Server Error' });
   }
 });
+
+
+// this is for posting something on the timeline
+
+
+app.post('/post', middleware.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      throw new Error('No file uploaded');
+    }
+
+    const { originalname, path } = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    const newPath = path + '.' + ext;
+    fs.renameSync(path, newPath);
+
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
+      if (err) {
+        throw err;
+      }
+
+      const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
+      const postDoc = await Post.create({
+        title,
+        numberOfPeople,
+        dateTime,
+        eventType,
+        privetPublic,
+        postCode,
+        coverImg: newPath,
+        summary,
+        author: info.id,
+      });
+
+      res.json(postDoc);
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+//put request
+
+
+app.put('/post',middleware.single('file'), async (req,res) => {
+  let newPath = null;
+  if (req.file) {
+    const {originalname,path} = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    newPath = path+'.'+ext;
+    fs.renameSync(path, newPath);
+  }
+
+  const {token} = req.cookies;
+  jwt.verify(token, secret, {}, async (err,info) => {
+    if (err) throw err;
+    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
+    const postDoc = await Post.findById(id);
+    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+    if (!isAuthor) {
+      return res.status(400).json('you are not the author');
+    }
+    await postDoc.update({
+      title,
+        numberOfPeople,
+        dateTime,
+        eventType,
+        privetPublic,
+        postCode,
+        coverImg: newPath ? newPath : postDoc.coverImg,
+        summary,
+      
+    });
+
+    res.json(postDoc);
+  });
+
+});
+ 
+app.get('/post', async (req,res) => {
+  res.json(
+    await Post.find()
+      .populate('author', ['username'])
+      .sort({createdAt: -1})
+      .limit(20)
+  );
+});
+
+app.get('/post/:id', async (req, res) => {
+  const {id} = req.params;
+  const postDoc = await Post.findById(id).populate('author', ['username']);
+  res.json(postDoc);
+})
+
+
+
 
 
 
