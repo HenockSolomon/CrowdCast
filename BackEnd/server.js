@@ -228,6 +228,44 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 //   }
 // });
 
+app.put('/post/:id', uploadMiddleware.single('file'), async (req, res) => {
+  let newPath = null;
+  if (req.file) {
+    const { originalname, path } = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    newPath = path + '.' + ext;
+    fs.renameSync(path, newPath);
+  }
+
+  try {
+    const { id, title, summary, dateTime, numberOfPeople, location } = req.body;
+    const postDoc = await Post.findById(id);
+    if (!postDoc) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    // Check if the user is the author of the post
+    const isAuthor = postDoc.author.toString() === req.user.id;
+    if (!isAuthor) {
+      return res.status(403).json({ error: 'You are not the author of this post' });
+    }
+
+    postDoc.title = title;
+    postDoc.summary = summary;
+    postDoc.dateTime = dateTime;
+    postDoc.numberOfPeople = numberOfPeople;
+    postDoc.location = location;
+    postDoc.coverImg = newPath || postDoc.coverImg;
+    await postDoc.save();
+
+    res.json(postDoc);
+  } catch (error) {
+    console.error('Error updating post:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
  
 app.get('/post', async (req,res) => {

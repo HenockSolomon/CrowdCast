@@ -61,30 +61,48 @@ export default function EditPost() {
         <h1>Edit Post</h1>
   
         <form onSubmit={handleUpdatePost} className="edit-post-form">
-          {/* Render input fields for editing the post */}
+          <label htmlFor="datetime">Date and Time</label>
           <input
-            type="text"
-            placeholder="Title"
-            value={post.title}
-            onChange={(e) => setPost({ ...post, title: e.target.value })}
+            type="datetime-local"
+            id="datetime"
+            value={post.dateTime}
+            onChange={(e) => setPost({ ...post, dateTime: e.target.value })}
             className="input-field"
           />
   
+          <label htmlFor="numberOfPeople">Number of People</label>
+          <input
+            type="number"
+            id="numberOfPeople"
+            value={post.numberOfPeople}
+            onChange={(e) => setPost({ ...post, numberOfPeople: e.target.value })}
+            className="input-field"
+          />
+  
+          <label htmlFor="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            value={post.location}
+            onChange={(e) => setPost({ ...post, location: e.target.value })}
+            className="input-field"
+          />
+  
+          <label htmlFor="summary">Summary</label>
           <textarea
-            placeholder="Summary"
+            id="summary"
             value={post.summary}
             onChange={(e) => setPost({ ...post, summary: e.target.value })}
             className="input-field"
           />
   
-          <textarea
-            placeholder="Content"
-            value={post.content}
-            onChange={(e) => setPost({ ...post, content: e.target.value })}
+          <label htmlFor="coverImg">Cover Image</label>
+          <input
+            type="file"
+            id="coverImg"
+            onChange={(e) => setPost({ ...post, coverImg: e.target.files[0] })}
             className="input-field"
           />
-  
-          {/* Add more input fields for other post properties as needed */}
   
           <button type="submit" className="submit-btn">
             Update Post
@@ -93,4 +111,4 @@ export default function EditPost() {
       </div>
     </>
   );
-}
+  }
