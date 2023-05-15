@@ -16,31 +16,22 @@ import IndexPage from './Pages/indexPage';
 
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const handleLogin = (userData) => {
-    setAuthenticated(true);
-    setUser(userData);
-  };
 
-  const handleLogout = () => {
-    setAuthenticated(false);
-    setUser(null);
-  };
 
   return (
-    <UserContextProvider value={{ authenticated, user, handleLogin, handleLogout }}>
+    <UserContextProvider >
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Layout />} />
-          <Route index element={<IndexPage />} />
-          <Route path="/About" element={<About />} />
-          <Route path="/CreatePost" element={<CreatePost />} />
-          <Route path="/LoginSignup" element={<LoginSignup handleLogin={handleLogin} />} />
-          <Route path="/UserProfile" element={<UserProfile handleLogout={handleLogout} />} />
-          <Route path="/post/:id" element={<PostPage />} />
-          <Route path="/edit/:id" element={<EditPost />} />
+            <Route path="/" element={<Layout />} >
+              <Route index element={<IndexPage />} />
+              <Route path="/About" element={<About />} />
+              <Route path="/CreatePost" element={<CreatePost />} />
+              <Route path="/LoginSignup" element={<LoginSignup />} />
+              <Route path="/UserProfile" element={<UserProfile />} />
+              <Route path="/post/:id" element={<PostPage />} />
+              <Route path="/edit/:id" element={<EditPost />} />
+            </Route>
         </Routes>
       </Router>
     </UserContextProvider>

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const Post= require('./models/Posts');
 const multer = require('multer');
-const middleware= multer({dest : './middle'});
+const uploadMiddleware= multer({dest : './middle'});
 const fs = require('fs');
 
 const app = express();
@@ -137,12 +137,10 @@ app.get('/userprofile', async (req, res) => {
 
 
 // this is for posting something on the timeline
-
-
-app.post('/post', middleware.single('file'), async (req, res) => {
+app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
   try {
     if (!req.file) {
-      throw new Error('No file uploaded');
+      return res.status(400).json({ error: 'No file uploaded' });
     }
 
     const { originalname, path } = req.file;
@@ -178,44 +176,59 @@ app.post('/post', middleware.single('file'), async (req, res) => {
   }
 });
 
+
 //put request
+// app.put(`/post/:postId`, middleware.single('file'), async (req, res) => {
+//   try {
+//     const { postId } = req.params;
+  
+//     if (!req.file) {
+//       throw new Error('No file uploaded');
+//     }
+  
+//     const { originalname, path } = req.file;
+//     const parts = originalname.split('.');
+//     const ext = parts[parts.length - 1];
+//     const newPath = path + '.' + ext;
+//     fs.renameSync(path, newPath);
+  
+//     const { token } = req.cookies;
+//     jwt.verify(token, secret, {}, async (err, info) => {
+//       if (err) {
+//         throw err;
+//       }
+  
+//       const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
+  
+//       // Find the post to be updated
+//       const postDoc = await Post.findById(postId);
+  
+//       if (!postDoc) {
+//         return res.status(404).json({ error: 'Post not found' });
+//       }
+  
+//       // Update the post properties
+//       postDoc.title = title;
+//       postDoc.numberOfPeople = numberOfPeople;
+//       postDoc.dateTime = dateTime;
+//       postDoc.eventType = eventType;
+//       postDoc.privetPublic = privetPublic;
+//       postDoc.postCode = postCode;
+//       postDoc.coverImg = newPath; // Assign the uploaded file path to the coverImg field
+//       postDoc.summary = summary;
+  
+//       // Save the updated post
+//       await postDoc.save();
+  
+//       res.json(postDoc);
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Server error' });
+//   }
+// });
 
 
-app.put('/post',middleware.single('file'), async (req,res) => {
-  let newPath = null;
-  if (req.file) {
-    const {originalname,path} = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    newPath = path+'.'+ext;
-    fs.renameSync(path, newPath);
-  }
-
-  const {token} = req.cookies;
-  jwt.verify(token, secret, {}, async (err,info) => {
-    if (err) throw err;
-    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
-    const postDoc = await Post.findById(id);
-    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-    if (!isAuthor) {
-      return res.status(400).json('you are not the author');
-    }
-    await postDoc.update({
-      title,
-        numberOfPeople,
-        dateTime,
-        eventType,
-        privetPublic,
-        postCode,
-        coverImg: newPath ? newPath : postDoc.coverImg,
-        summary,
-      
-    });
-
-    res.json(postDoc);
-  });
-
-});
  
 app.get('/post', async (req,res) => {
   res.json(

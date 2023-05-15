@@ -6,11 +6,12 @@ const PostSchema = new Schema({
   
   title: {type: String,required: true },
   numberOfPeople: {type: String },
-  dateTime: {type: String,required: true },
-  eventType: {type: String},
-  privetPublic: {type: String,required: true},
-  coverImg: {type: String},
   postCode: {type: String},
+  dateTime: {type: String},
+  eventType: {type: String},
+  privetPublic: {type: String},
+  coverImg: {type: String},
+  
   summary: {type: String},
   author: {type: Schema.Types.ObjectId, ref: 'UserData'},
 },{

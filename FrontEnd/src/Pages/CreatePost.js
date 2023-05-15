@@ -3,19 +3,20 @@ import Navbar from "../HeaderPublic";
 import {useState} from "react";
 import {Navigate} from "react-router-dom";
 import Editor from "./editorPage";
-import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 export default function CreatePost() {
 
     
     const [title,setTitle] = useState('');
     const [numberOfPeople,setNumberOfPeople] = useState('');
+    const [postCode,setPostCode] = useState('');
+
     const [dateTime,setDateTime] = useState('');
     const [eventType,setEventType] = useState('');
     const [privetPublic,setPrivetPublic] = useState('');
     const [coverImg,setCoverImg] = useState('');
-    const [postCode,setPostCode] = useState('');
     const [summary,setSummary] = useState('');
+    const [redirect, setRedirect] = useState(false);
 
     const [content,setContent] = useState('');
     const [file, setFiles] = useState('');
@@ -26,10 +27,11 @@ export default function CreatePost() {
         const data = new FormData();
         data.set('title', title);
         data.set('numberOfPeople', numberOfPeople);
+        data.set('postCode', postCode);
         data.set('dateTime', dateTime);
         data.set('eventType', eventType);
         data.set('coverImg', coverImg);
-        data.set('postCode', postCode);
+
         data.set('privetPublic', privetPublic);
         data.set('summary', summary);
         data.set('content', content);
@@ -42,10 +44,13 @@ export default function CreatePost() {
     });
     if (response.ok) {
       console.log('working')
+      setRedirect(true);
     }
   }
         
-    
+  if (redirect) {
+        return <Navigate to={'/'} />
+      }
 
 
 

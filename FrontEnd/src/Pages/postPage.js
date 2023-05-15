@@ -10,7 +10,7 @@ export default function PostPage(){
     const {userInfo} = useContext(UserContext);
     const {id} = useParams();
     useEffect(() => {
-      fetch(`http://localhost:4000/post/${id}`)
+      fetch(`http://localhost:8000/post/${id}`)
         .then(response => {
           response.json().then(postInfo => {
             setPostInfo(postInfo);
@@ -41,5 +41,5 @@ return (
     <div className="content" dangerouslySetInnerHTML={{__html:postInfo.content}} />
   </div>
 );
-);
+
 }
