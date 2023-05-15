@@ -240,12 +240,34 @@ app.get('/post', async (req,res) => {
 });
 
 app.get('/post/:id', async (req, res) => {
-  const {id} = req.params;
-  const postDoc = await Post.findById(id).populate('author', ['username']);
-  res.json(postDoc);
-})
+  try {
+    const { id } = req.params;
+    const postDoc = await Post.findById(id).populate('author', 'username');
+    
+    if (!postDoc) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.json(postDoc);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
+// handling deletion 
+app.delete('/post/:id', async (req, res) => {
+  const postId = req.params.id;
+
+  try {
+    await Post.deleteOne({ _id: postId });
+    res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    res.status(500).json({ error: 'An error occurred while deleting the post' });
+  }
+});
 
 
 

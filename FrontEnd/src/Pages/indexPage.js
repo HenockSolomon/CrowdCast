@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Post from "../Post";
-
+import Post from "../posts";
+import HomePage from "../HomePage";
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);

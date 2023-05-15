@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { formatISO9075 } from "date-fns";
 import { Link } from "react-router-dom";
 import Navbar from "./HeaderPublic";
 import PropTypes from "prop-types";
 
-export default function Post({
-  _id,
-  title,
-  coverImg,
-  createdAt,
-  summary,
-  author
-}) {
+export default function Post({ _id, title, numberOfPeople, dateTime, eventType, privetPublic, postCode, coverImg, createdAt, summary, author }) {
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    if (author && author.username) {
+      setUsername(author.username);
+    }
+  }, [author]);
+
   return (
     <div>
-      <Navbar />
+     
       <div className="post">
         <div className="image">
           <Link to={`/post/${_id}`}>
@@ -26,23 +27,18 @@ export default function Post({
             <h2>{title}</h2>
           </Link>
           <p className="info">
-            <a className="author">{author.username}</a>
+            <a className="author">{author && author.username}</a>
             <time>{formatISO9075(new Date(createdAt))}</time>
           </p>
-          <p className="summary">{summary}</p>
+          Location is at: {postCode}, it is a {eventType} {privetPublic} event <br/>
+          Date of the event : {dateTime}, for {numberOfPeople} people , 
+          {summary && (
+            <article className="summary">
+              {summary}
+            </article>
+          )}
         </div>
       </div>
     </div>
   );
 }
-
-Post.propTypes = {
-  _id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  summary: PropTypes.string.isRequired,
-  coverImg: PropTypes.string.isRequired,
-  createdAt: PropTypes.string.isRequired,
-  author: PropTypes.shape({
-    username: PropTypes.string.isRequired
-  }).isRequired
-};
