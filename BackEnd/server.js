@@ -136,7 +136,7 @@ app.get('/userprofile', async (req, res) => {
 });
 
 
-// this is for posting something on the timeline
+//a post request
 app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
   try {
     if (!req.file) {
@@ -178,93 +178,36 @@ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
 
 
 //put request
-// app.put(`/post/:postId`, middleware.single('file'), async (req, res) => {
-//   try {
-//     const { postId } = req.params;
-  
-//     if (!req.file) {
-//       throw new Error('No file uploaded');
-//     }
-  
-//     const { originalname, path } = req.file;
-//     const parts = originalname.split('.');
-//     const ext = parts[parts.length - 1];
-//     const newPath = path + '.' + ext;
-//     fs.renameSync(path, newPath);
-  
-//     const { token } = req.cookies;
-//     jwt.verify(token, secret, {}, async (err, info) => {
-//       if (err) {
-//         throw err;
-//       }
-  
-//       const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
-  
-//       // Find the post to be updated
-//       const postDoc = await Post.findById(postId);
-  
-//       if (!postDoc) {
-//         return res.status(404).json({ error: 'Post not found' });
-//       }
-  
-//       // Update the post properties
-//       postDoc.title = title;
-//       postDoc.numberOfPeople = numberOfPeople;
-//       postDoc.dateTime = dateTime;
-//       postDoc.eventType = eventType;
-//       postDoc.privetPublic = privetPublic;
-//       postDoc.postCode = postCode;
-//       postDoc.coverImg = newPath; // Assign the uploaded file path to the coverImg field
-//       postDoc.summary = summary;
-  
-//       // Save the updated post
-//       await postDoc.save();
-  
-//       res.json(postDoc);
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Server error' });
-//   }
-// });
-
-app.put('/post/:id', uploadMiddleware.single('file'), async (req, res) => {
-  let newPath = null;
-  if (req.file) {
-    const { originalname, path } = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-  }
-
+app.put(`/post/:id`, async (req, res) => {
   try {
-    const { id, title, summary, dateTime, numberOfPeople, location } = req.body;
+    const { id } = req.params;
+    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
+    
     const postDoc = await Post.findById(id);
+    
     if (!postDoc) {
       return res.status(404).json({ error: 'Post not found' });
     }
-
-    // Check if the user is the author of the post
-    const isAuthor = postDoc.author.toString() === req.user.id;
-    if (!isAuthor) {
-      return res.status(403).json({ error: 'You are not the author of this post' });
-    }
-
-    postDoc.title = title;
-    postDoc.summary = summary;
-    postDoc.dateTime = dateTime;
-    postDoc.numberOfPeople = numberOfPeople;
-    postDoc.location = location;
-    postDoc.coverImg = newPath || postDoc.coverImg;
+    
+    postDoc.title = title || postDoc.title;
+    postDoc.numberOfPeople = numberOfPeople || postDoc.numberOfPeople;
+    postDoc.dateTime = dateTime || postDoc.dateTime;
+    postDoc.eventType = eventType || postDoc.eventType;
+    postDoc.privetPublic = privetPublic || postDoc.privetPublic;
+    postDoc.postCode = postCode || postDoc.postCode;
+    postDoc.summary = summary || postDoc.summary;
+    
     await postDoc.save();
-
+  
     res.json(postDoc);
   } catch (error) {
-    console.error('Error updating post:', error);
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
+
 
 
  

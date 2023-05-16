@@ -4,26 +4,25 @@ import {useState} from "react";
 import {Navigate} from "react-router-dom";
 import Editor from "./editorPage";
 import 'react-quill/dist/quill.snow.css';
+
+
 export default function CreatePost() {
 
     
     const [title,setTitle] = useState('');
     const [numberOfPeople,setNumberOfPeople] = useState('');
     const [postCode,setPostCode] = useState('');
-
     const [dateTime,setDateTime] = useState('');
     const [eventType,setEventType] = useState('');
     const [privetPublic,setPrivetPublic] = useState('');
     const [coverImg,setCoverImg] = useState('');
     const [summary,setSummary] = useState('');
-    const [redirect, setRedirect] = useState(false);
-
     const [content,setContent] = useState('');
     const [file, setFiles] = useState('');
+    const [redirect, setRedirect] = useState(false);
 
-
-    async function createPost(e){
-        e.preventDefault();
+    async function createNewPost(e){
+       
         const data = new FormData();
         data.set('title', title);
         data.set('numberOfPeople', numberOfPeople);
@@ -36,11 +35,11 @@ export default function CreatePost() {
         data.set('summary', summary);
         data.set('content', content);
         data.set('file', file[0]);
-
+        e.preventDefault();
         const response = await fetch ('http://localhost:8000/post', {
             method: 'POST',
-      body: data,
-      credentials: 'include',
+            body: data,
+            credentials: 'include',
     });
     if (response.ok) {
       console.log('working')
@@ -66,7 +65,7 @@ export default function CreatePost() {
             <h1>Create Post</h1>
 
 
-        <form onSubmit={createPost} className="create-post-form">
+        <form onSubmit={createNewPost} className="create-post-form">
             <input type="title"
                     placeholder={'Title'}
                     value={title}
