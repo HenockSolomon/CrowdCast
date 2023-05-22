@@ -6,6 +6,7 @@ export default function Layout() {
     <main>
       <Navbar />
       <Outlet />
+      
     </main>
   );
 }

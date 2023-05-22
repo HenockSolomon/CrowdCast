@@ -67,8 +67,43 @@ export default function Home() {
             </div>
           )}
         </div>
+
+
+
+       
       </div>
       <IndexPage />
+      <footer className="footer">
+      <div className="footer-content">
+        <div className="footer-section">
+          <h3>About Us</h3>
+          <p>
+            Crowd Cast is a web based application designed for sharing events that are happening necessary us. 
+            Create an event and have fun with your family and friends.
+          </p>
+        </div>
+        <div className="footer-section">
+          <h3>Contact</h3>
+          <p>
+            Email:CrowdCast@info.com
+            <br />
+            Phone: 123-456-7890
+          </p>
+        </div>
+        <div className="footer-section">
+          <h3>Follow Us on</h3>
+          <div className="social-media-links">
+            <a href="#" className="social-media-link">
+              <i className="fab fa-facebook">crowedcast.linkedin.com</i>
+            </a>
+            
+          </div>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <p>&copy; 2023 Crowd Cast. All rights reserved.</p>
+      </div>
+    </footer>
     </div>
   );
 }

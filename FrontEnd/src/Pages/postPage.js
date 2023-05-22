@@ -96,11 +96,23 @@ export default function PostPage() {
   return (
     <>
       <Navbar />
-      <div className="post-page">
+      <div className="post-page cont">
         <h1>{post.title}</h1>
         <time>{formatISO9075(new Date(post.createdAt))}</time>
         <div className="author">by @{post.author.username}</div>
       
+        
+       
+        <div className="image">
+          <img src={`http://localhost:8000/${post.coverImg}`} alt={post.title} />
+        </div>
+        <div>
+          Location is at: {post.postCode}, it is a {post.eventType} {post.privetPublic} event
+        </div>
+        <div>
+          Date of the event: {post.dateTime}, for {post.numberOfPeople} people
+        </div>
+        <div className="content" dangerouslySetInnerHTML={{ __html: post.summary }} />
         {editable && (
           <div className="edit-row">
             <Link className="edit-btn" to={`/edit/${post._id}`}> 
@@ -129,9 +141,7 @@ export default function PostPage() {
           <button type="button" onClick={handleDeleteClick}>
             Delete this post
           </button>
-        </div>
-        )}
-        {showDeleteModal && (
+          {showDeleteModal && (
           <div className="delete-modal">
             <p>Are you sure you want to delete this post?</p>
             <button type="button" onClick={() => handleConfirmDelete(post._id)}>
@@ -142,17 +152,10 @@ export default function PostPage() {
             </button>
           </div>
         )}
-        <div className="image">
-          <img src={`http://localhost:8000/${post.coverImg}`} alt={post.title} />
         </div>
-        <div>
-          Location is at: {post.postCode}, it is a {post.eventType} {post.privetPublic} event
-        </div>
-        <div>
-          Date of the event: {post.dateTime}, for {post.numberOfPeople} people
-        </div>
-        <div className="content" dangerouslySetInnerHTML={{ __html: post.summary }} />
+        )}
       </div>
+      
     </>
   );
         }  

@@ -119,7 +119,7 @@ function toggleForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 />
-                <button className="btn" type="submit">Login</button>
+                <button className="btn log-in" type="submit">Login</button>
             </form>
     
 
@@ -140,7 +140,7 @@ function toggleForm() {
                     placeholder="Password" 
                     value={password}
                     onChange={((e)=> setPassword(e.target.value))}/>
-                <button type="submit" className="btn">Signup</button>
+                <button type="submit" className="btn sign-up">Signup</button>
                 <h1 className="heading forNew" onClick={toggleForm}> go back to login </h1>
             </form>
             

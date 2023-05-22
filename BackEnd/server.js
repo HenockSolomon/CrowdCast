@@ -77,7 +77,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-
+  
 
 //this is post request to be checked on postman the user data inputs for login
 app.post('/login', async (req, res) => {
@@ -129,8 +129,8 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ msg: 'Internal Server Error' }); 
   }
 }); 
-
-
+ 
+ 
 // this is for userprofile only
 app.get('/userprofile', async (req, res) => {
   try {
