@@ -65,7 +65,7 @@ export default function Userprofile() {
           )}
         </div>
 
-        <div className="attended-events">
+        {/* <div className="attended-events">
           <h2>Attending Events</h2>
           {attendedEvents.length > 0 ? (
             attendedEvents.map(event => (
@@ -75,8 +75,8 @@ export default function Userprofile() {
             ))
           ) : (
             <p>No attended events</p>
-          )}
-        </div>
+          )} 
+        </div>*/}
       </div>
     </div>
   );

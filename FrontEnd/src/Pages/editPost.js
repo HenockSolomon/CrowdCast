@@ -72,52 +72,60 @@ export default function EditPost() {
         <h1>Edit Post</h1>
 
         <form onSubmit={handleUpdatePost} className="edit-post-form">
-          <label htmlFor="title">Title</label>
+          <label htmlFor="title">Title: </label><br/>
           <input
             type="text"
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="input-field"
-          />
+          /><br/>
 
-          <label htmlFor="postCode">Post Code</label>
+          <label htmlFor="postCode">Post Code:</label><br/>
           <input
             type="text"
             id="postCode"
             value={postCode}
             onChange={(e) => setPostCode(e.target.value)}
             className="input-field"
-          />
-           <label htmlFor="numberOfPeople">Number of People</label>
+          /> <br/>
+           <label htmlFor="numberOfPeople">Number of People:</label><br/>
           <input
             type="number"
             id="numberOfPeople"
             value={numberOfPeople}
             onChange={(e) => setNumberOfPeople(e.target.value)}
             className="input-field"
-          />
-          <label htmlFor="dateTime">Date and Time</label>
+          /><br/>
+          <label htmlFor="dateTime">Date and Time:</label><br/>
           <input
             type="datetime-local"
             id="dateTime"
             value={dateTime}
             onChange={(e) => setDateTime(e.target.value)}
             className="input-field"
-          />
-      <label htmlFor="privetPublic">Public/Private</label>
+          /><br/>
+      <label htmlFor="privetPublic">Event is for:</label><br/>
       <select
         id="privetPublic"
         value={privetPublic}
         onChange={(e) => setPrivetPublic(e.target.value)}
         className="input-field"
       >
-        <option value=""></option>
-        <option value="private">Private</option>
-        <option value="public">Public</option>
-      </select>
+       
+      
+                    <option value="private">For close family/friends</option>
+                    <option value="public">For co-workers</option>
+                    <option value="public">For charity</option>
+                    <option value="public">For public social gathering</option>
+                    <option value="public">For conference</option>
+                    <option value="public">For workshop</option>
+                    <option value="public">For exhibition</option>
+                    <option value="public">For concert</option>
+                    <option value="public">For sport event</option>
+      </select><br/>
 
-      <label htmlFor="eventType">Event Type</label>
+      <label htmlFor="eventType">Event Type:</label><br/>
       <select
         id="eventType"
         value={eventType}
@@ -131,23 +139,16 @@ export default function EditPost() {
             <option value="black tie">Black Tie</option>
             <option value="white tie">White Tie</option>
             <option value="white tie">cocktail</option>
-      </select>   
-        <label htmlFor="coverImg">Cover Image</label>
-        <input
-          type="file"
-          id="coverImg"
-          accept="image/*"
-          onChange={(e) => setCoverImg(e.target.files[0])}
-          className="input-field"
-        />
+      </select>   <br/>
+   
 
-          <label htmlFor="summary">Summary</label>
+          <label htmlFor="summary">Summary:</label><br/>
             <textarea
               id="summary"
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
               className="input-field"
-            />
+            /><br/>
 
           <button type="submit" className="submit-btn">
             Update Post

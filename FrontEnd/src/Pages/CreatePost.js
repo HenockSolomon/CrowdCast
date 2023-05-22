@@ -89,7 +89,7 @@ export default function CreatePost() {
             <select
                     value={eventType}
                     onChange={e => setEventType(e.target.value)}
-                    className="input-field"
+                    className="input-field select"
                     >
                     <option value="">Select event type</option>
                     <option value="casual">Casual</option>
@@ -103,10 +103,17 @@ export default function CreatePost() {
             <select
                     value={privetPublic}
                     onChange={e => setPrivetPublic(e.target.value)}
-                    className="input-field" >
+                    className="input-field select" >
                     <option value="">Select event for </option>
-                    <option value="private">Close family/friends</option>
-                    <option value="public">Public</option>
+                    <option value="private">For close family/friends</option>
+                    <option value="public">For co-workers</option>
+                    <option value="public">For charity</option>
+                    <option value="public">For public social gathering</option>
+                    <option value="public">For conference</option>
+                    <option value="public">For workshop</option>
+                    <option value="public">For exhibition</option>
+                    <option value="public">For concert</option>
+                    <option value="public">For sport event</option>
             </select>
 
            

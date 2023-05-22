@@ -2,16 +2,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const port = 8000;
-const UserData = require('./models/UserData');
+
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const UserData = require('./models/UserData');
 const Post= require('./models/Posts');
+const Attend = require('./models/Attend');
 const multer = require('multer');
 const uploadMiddleware= multer({dest : './middle'});
 const fs = require('fs');
 const app = express();
+
 app.use(express.json());
 app.use(cors({credentials:true, origin:'http://localhost:3000'}));
 dotenv.config();
@@ -20,7 +23,6 @@ const secret = process.env.SECRET_KEY;
 const { body, validationResult } = require('express-validator');
 app.use(cookieParser());
 app.use('/middle', express.static(__dirname + '/middle'));
-app.use('/models/Attend', require('./routes/Attend'));
 
 
 
@@ -99,7 +101,14 @@ app.post('/login', async (req, res) => {
     }
 
     if (passwordMatch) {
-     jwt.sign({ username, id: userData._id, email: userData.email, password: userData.password }, secret, {}, (err, token) => {
+     jwt.sign({ 
+      username, 
+      id: userData._id, 
+      email: userData.email, 
+      password: userData.password , 
+      attendedEvents: userData.attendedEvents
+    }, 
+    secret, {}, (err, token) => {
       if (err) throw err;
 
       res.cookie('token', token).json({
@@ -108,6 +117,7 @@ app.post('/login', async (req, res) => {
         id: userData._id,
         email: userData.email,
         password : userData.password,
+        attendedEvents: userData.attendedEvents,
         msg: 'Successfully logged in',
       });
     });
@@ -126,7 +136,7 @@ app.get('/userprofile', async (req, res) => {
   try {
     const {token} = req.cookies; // assuming the name of the cookie is "token"
     if (!token) {
-      return res.status(401).json({ msg: 'Unauthorized access' });
+      return res.status(401).json({ msg: 'Unauthorized access!' });
     }
     const decodedToken = jwt.verify(token, secret);
     res.json(decodedToken);
@@ -137,11 +147,45 @@ app.get('/userprofile', async (req, res) => {
 });
 
 
+
+const { ObjectId } = require('mongoose').Types;
+
+app.put('/userprofile', async (req, res) => {
+  try {
+    const { id, attendedEvents } = req.body;
+
+    // Assuming you have a User model/schema defined
+    const user = await UserData.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Convert the attendedEvents array to an array of ObjectId values
+    const attendedEventIds = attendedEvents.map(event => new ObjectId(event.id));
+
+    // Update the attendedEvents array in the user document
+    user.attendedEvents = attendedEventIds;
+
+    // Save the updated user document
+    await user.save();
+
+    res.json({ msg: 'Attended events updated successfully' });
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({ msg: 'Internal Server Error' });
+  }
+});
+
+
+
+
+
+
+
 //a post request
-// POST /post - Create a new post
-app.post(
-  '/post',
-  uploadMiddleware.single('file'),
+
+app.post( '/post', uploadMiddleware.single('file'),
   [
     body('title').notEmpty().withMessage('Title is required'),
     body('numberOfPeople')
@@ -163,12 +207,12 @@ app.post(
       fs.renameSync(path, newPath);
 
       const { token } = req.cookies;
-      jwt.verify(token, secret, {}, async (err, info) => {
+      jwt.verify(token, secret, {}, async (err, decodedToken) => {
         if (err) {
           throw err;
         }
 
-        const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, attending, attendeeCount, summary } = req.body;
+        const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode,summary, attendingUsers } = req.body;
         const postDoc = await Post.create({
           title,
           numberOfPeople,
@@ -176,11 +220,10 @@ app.post(
           eventType,
           privetPublic,
           postCode,
-          attending: false,
-          attendeeCount: 0,
           coverImg: newPath,
           summary,
-          author: info.id,
+          attendingUsers,
+          author: decodedToken.id,
         });
 
         res.json(postDoc);
@@ -196,7 +239,7 @@ app.post(
 app.put('/post/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, attending, attendeeCount, summary } = req.body;
+    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary, attendingUsers } = req.body;
     const postDoc = await Post.findById(id);
 
     if (!postDoc) {
@@ -209,18 +252,56 @@ app.put('/post/:id', async (req, res) => {
     postDoc.eventType = eventType || postDoc.eventType;
     postDoc.privetPublic = privetPublic || postDoc.privetPublic;
     postDoc.postCode = postCode || postDoc.postCode;
-    postDoc.attending = attending || postDoc.attending;
-    postDoc.attendeeCount = attendeeCount || postDoc.attendeeCount;
     postDoc.summary = summary || postDoc.summary;
+    postDoc.attendingUsers = attendingUsers || postDoc.attendingUsers;
 
     await postDoc.save();
 
     res.json(postDoc);
   } catch (error) {
-    console.error(error);
+    console.error(error); 
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// Assuming you have the necessary middleware and routes set up
+// const  authenticateJWT = require('./JWT');
+
+
+
+// POST /post/:id/attend
+// app.put('/post/:id/attend', authenticateJWT, async (req, res) => {
+//   const { id } = req.params;
+//   const { attending } = req.body;
+
+//   try {
+//     const post = await Post.findById(id);
+
+//     if (!post) {
+//       return res.status(404).json({ message: 'Post not found' });
+//     }
+
+//     if (attending) {
+//       // Add the user ID to the attendingUsers array if it's not already present
+//       if (!post.attendingUsers.includes(req.user.id)) {
+//         post.attendingUsers.push(req.user.id);
+//       }
+//     } else {
+//       // Remove the user ID from the attendingUsers array
+//       post.attendingUsers = post.attendingUsers.filter(userId => userId.toString() !== req.user.id.toString());
+//     }
+
+//     await post.save();
+
+//     res.json({ message: 'Attending status updated successfully' });
+//   } catch (error) {
+//     console.error('Error updating attending status:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
+
+
 
 
 

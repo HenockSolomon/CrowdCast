@@ -11,94 +11,91 @@ export default function Post({
   numberOfPeople,
   dateTime,
   eventType,
-  privetPublic,
+  privatePublic,
   postCode,
   coverImg,
   createdAt,
   attending: initialAttending,
-  attendeeCount: initialAttendeeCount,
+  attendingUsers,
   summary,
   author,
 }) {
   const [username, setUsername] = useState('');
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [isAttending, setIsAttending] = useState(initialAttending);
-  const [attendeeCount, setAttendeeCount] = useState(initialAttendeeCount);
 
   const [attendedPostIds, setAttendedPostIds] = useState([]);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/userprofile', {
-          credentials: 'include',
-        });
-  
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-  
-        const userInfo = await response.json();
-        if (userInfo && userInfo.username) {
-          setUsername(userInfo.username);
-          setIsAttending(initialAttending);
-          setAttendeeCount(initialAttendeeCount);
-          console.log(userInfo);
-        } else {
-          throw new Error('User info not available');
-        }
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-      }
-    };
-  
-    fetchUserProfile();
-  }, [username, initialAttending, initialAttendeeCount]);
+  // ...
 
-  const toggleSummary = () => {
-    setShowFullSummary(!showFullSummary);
+useEffect(() => {
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/userprofile', {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const userInfo = await response.json();
+      if (userInfo && userInfo.username) {
+        setUsername(userInfo.username);
+        setIsAttending(initialAttending);
+        if (!userInfo.attending) {
+          setIsAttending(false); // Set isAttending to false if user is not already attending
+        }
+      } else {
+        throw new Error('User info not available');
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
   };
 
-  const toggleAttending = () => {
-    if (!username) {
-      alert('Please log in to attend the event.');
-      return;
+  fetchUserProfile();
+}, [username, initialAttending]);
+
+// ..................................................................................//
+
+const toggleAttending = () => {
+  if (!username) {
+    alert('Please log in to attend the event.');
+    return;
+  }
+
+  const newIsAttending = !isAttending;
+
+  // Update local state
+  setIsAttending(newIsAttending);
+  setAttendedPostIds((prevIds) => {
+    if (newIsAttending) {
+      return [...prevIds, _id]; // Add the post ID
+    } else {
+      return prevIds.filter((id) => id !== _id); // Remove the post ID
     }
+  });
 
-    const newIsAttending = !isAttending;
-    const newAttendeeCount = attendeeCount + (newIsAttending ? 1 : -1);
+  // Update the attended events array with the post ID
+  setAttendedPostIds((prevIds) => {
+    if (newIsAttending) {
+      return [...prevIds, _id]; // Add the post ID
+    } else {
+      return prevIds.filter((id) => id !== _id); // Remove the post ID
+    }
+  });
+};
 
-    // Update local state
-    setIsAttending(newIsAttending);
-    setAttendeeCount(newAttendeeCount);
-    setAttendedPostIds(prevIds => {
-      if (newIsAttending) {
-        return [...prevIds, _id]; // Add the post ID
-      } else {
-        return prevIds.filter(id => id !== _id); // Remove the post ID
-      }
-    });
 
-    // Send PUT request to update attendee count on the backend
-    fetch(`http://localhost:8000/post/${_id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ attending: newIsAttending, attendeeCount: newAttendeeCount }),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to update attendee count');
-        }
-        return response.json();
-      })
-      .then(updatedPost => {
-        // Handle the updated post response if needed
-      })
-      .catch(error => {
-        console.error('Error updating attendee count:', error);
-      });
+
+
+
+
+
+  //..................................................................................//
+  const toggleSummary = () => {
+    setShowFullSummary(!showFullSummary);
   };
 
   const displaySummary =
@@ -106,7 +103,7 @@ export default function Post({
       ? summary
       : `${summary.substring(0, MAX_SUMMARY_LENGTH)}...`;
 
-  const isEventFull = attendeeCount >= parseInt(numberOfPeople);
+
 
   const currentDate = new Date();
   const eventDate = new Date(dateTime);
@@ -132,7 +129,7 @@ export default function Post({
             <a className="author">by: @{author && author.username}    </a>
             <time>{formatISO9075(new Date(createdAt))}</time>
           </p>
-          Location is at: {postCode}, it is a {eventType} {privetPublic} event
+          Location is at: {postCode}, it is a {eventType} {privatePublic} event
           <br />
           Date of the event: {dateTime}, for {numberOfPeople} people,{' '}
           {displaySummary && (
@@ -154,13 +151,12 @@ export default function Post({
                 <button
                   className={`attending-btn${isAttending ? ' active' : ''}`}
                   onClick={toggleAttending}
-                  disabled={isEventFull}
                 >
-                  {isEventFull ? 'Event Full' : isAttending ? 'Attending' : 'Attend'}
+                  { isAttending ? 'Attending' : 'Attend'}
                 </button>
-                <span className="attendee-count">{attendeeCount}</span>
+                <span className="attendee-count"></span>
               </>
-            ) : (
+            ) :  (
               <button>
                 <Link  to={`/loginsignup`} >Log in to attend this event.</Link>
               </button>
@@ -178,12 +174,12 @@ Post.propTypes = {
   numberOfPeople: PropTypes.string.isRequired,
   dateTime: PropTypes.string.isRequired,
   eventType: PropTypes.string.isRequired,
-  privetPublic: PropTypes.string.isRequired,
+  privatePublic: PropTypes.string.isRequired,
   postCode: PropTypes.string.isRequired,
   coverImg: PropTypes.string.isRequired,
   createdAt: PropTypes.string.isRequired,
   attending: PropTypes.bool.isRequired,
-  attendeeCount: PropTypes.number.isRequired,
+  attendeeCount: PropTypes.number,
   summary: PropTypes.string.isRequired,
   author: PropTypes.shape({
     username: PropTypes.string,

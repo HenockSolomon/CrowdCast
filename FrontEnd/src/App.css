@@ -1,6 +1,6 @@
 * {
   text-decoration: none;
-  color: blue;
+  color: rgb(3, 3, 108);
 }
 
 .navbar {
@@ -60,7 +60,7 @@
 
 .containerHome {
   width: 100%;
-  height: 380px;
+  height: 300px;
 }
 
 .containerHome .headingSpace .cont {
@@ -71,8 +71,8 @@
 }
 
 .containerHome .headingSpace .coverImgContainer .coverImg {
-  height: 350px;
-  width: 450px;
+  height: 250px;
+  width: 350px;
   display: flexbox;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.39);
   margin-left: 100px;
@@ -94,7 +94,7 @@
     display: block;
   }
   .containerHome .headingSpace .coverImgContainer .coverImg {
-    height: 350px;
+    height: 250px;
     width: 100%;
     margin: 0 auto;
   }
@@ -103,6 +103,21 @@
     align-items: center;
     justify-content: center;
   }
+.post{
+  margin-top: 0px;
+  display: block;
+}
+.post .image{
+  width : 100%;
+}
+.post .texts{
+display: block;
+}
+.containerHome {
+  width: 100%;
+  height: 350px;
+}
+
 }
 
 @media (min-width: 651px) and (max-width: 1024px) {
@@ -213,14 +228,19 @@ max-width: 500px;
 margin: 0 auto;
 padding: 20px;
 }
-
+.quill{
+  width: 85%;
+}
 .input-field {
-width: 50%;
+width: 80%;
 margin-bottom: 10px;
 padding: 10px;
 border: 1px solid #ccc;
 border-radius: 4px;
 font-size: 16px;
+}
+.select {
+width: 85%;
 }
 
 .file-input {
@@ -243,11 +263,12 @@ cursor: pointer;
 
 .post {
 display: flex;
-background-color: #fff;
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 border-radius: 4px;
 padding: 20px;
 margin-bottom: 20px;
+
+  background-color: #b7b6b6; /* Define the background color for every second post */
 }
 
 .post .image {
@@ -384,7 +405,7 @@ color: #888;
 /* Styles for posted events */
 .posted-events {
   float: left;
-  width: 45%;
+  width: 98%;
   margin-bottom: 20px;
   background-color: gray;
   padding: 10px;

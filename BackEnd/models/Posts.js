@@ -13,13 +13,18 @@ const PostSchema = new Schema({
   coverImg: {type: String},
   
   summary: {type: String},
-  attending: { type: Boolean, default: false },
-  attendeeCount: { type: Number, default: 0 }, 
+ 
   author: {type: Schema.Types.ObjectId, ref: 'UserData'},
+  attendingUsers: [
+    {
+      id: { type: String, ref: 'UserData' },
+     
+    },
+  ], 
 },{
     timestamps: true,
 
-});
+});  
 
 const PostDetailModel = model("Post", PostSchema);
 module.exports = PostDetailModel;

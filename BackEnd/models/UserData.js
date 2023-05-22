@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
 const UserDetailSchema = new Schema({
-  
   username: {
     type: String,
     unique: true,
@@ -18,9 +17,8 @@ const UserDetailSchema = new Schema({
     type: String,
     required: true,
   },
-
-  attending: { type: Boolean, default: false },
-
+  attendedEvents: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 });
+
 const UserDetailModel = model("UserData", UserDetailSchema);
 module.exports = UserDetailModel;
