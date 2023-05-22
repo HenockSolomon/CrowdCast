@@ -13,6 +13,8 @@ const PostSchema = new Schema({
   coverImg: {type: String},
   
   summary: {type: String},
+  attending: { type: Boolean, default: false },
+  attendeeCount: { type: Number, default: 0 }, 
   author: {type: Schema.Types.ObjectId, ref: 'UserData'},
 },{
     timestamps: true,

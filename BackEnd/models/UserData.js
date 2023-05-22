@@ -18,7 +18,9 @@ const UserDetailSchema = new Schema({
     type: String,
     required: true,
   },
-});
 
+  attending: { type: Boolean, default: false },
+
+});
 const UserDetailModel = model("UserData", UserDetailSchema);
 module.exports = UserDetailModel;

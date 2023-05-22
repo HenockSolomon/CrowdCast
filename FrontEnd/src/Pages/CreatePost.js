@@ -81,7 +81,7 @@ export default function CreatePost() {
                     value={postCode}
                     onChange={e => setPostCode(e.target.value)} 
                     className="input-field"/>
-            <input type="Date"
+            <input type="datetime-local"
                     placeholder={'Date and Time'}
                     value={dateTime}
                     onChange={e => setDateTime(e.target.value)} 
@@ -105,7 +105,7 @@ export default function CreatePost() {
                     onChange={e => setPrivetPublic(e.target.value)}
                     className="input-field" >
                     <option value="">Select event for </option>
-                    <option value="private">Private</option>
+                    <option value="private">Close family/friends</option>
                     <option value="public">Public</option>
             </select>
 

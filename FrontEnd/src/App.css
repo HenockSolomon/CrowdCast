@@ -51,6 +51,12 @@
   color: black;
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.39);
 }
+.post-container {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-gap: 20px;
+}
+
 
 .containerHome {
   width: 100%;
@@ -67,7 +73,7 @@
 .containerHome .headingSpace .coverImgContainer .coverImg {
   height: 350px;
   width: 450px;
-  display: flex;
+  display: flexbox;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.39);
   margin-left: 100px;
 }
@@ -143,7 +149,7 @@ box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 
 input,
 button {
-width: 100%;
+width: 40%;
 padding: 10px;
 margin: 10px 0;
 border-radius: 5px;
@@ -151,18 +157,18 @@ border: none;
 }
 
 button {
-background-color: #444;
+background-color: #868686;
 color: #fff;
 cursor: pointer;
 transition: all 0.3s ease-in-out;
 }
 
 button:hover {
-background-color: #333;
+background-color: #535252;
 }
 
 button:active {
-background-color: #222;
+background-color: #141414;
 }
 
 .register {
@@ -209,6 +215,7 @@ padding: 20px;
 }
 
 .input-field {
+width: 50%;
 margin-bottom: 10px;
 padding: 10px;
 border: 1px solid #ccc;
@@ -244,7 +251,7 @@ margin-bottom: 20px;
 }
 
 .post .image {
-width: 200px;
+width: 300px;
 margin-right: 20px;
 }
 
@@ -280,9 +287,7 @@ color: #555;
 line-height: 1.5;
 }
 
-.post .texts .summary::after {
-content: "...";
-}
+
 
 .post .texts .summary:hover::after {
 content: "";
@@ -309,20 +314,7 @@ margin-bottom: 10px;
 color: #555;
 }
 
-.post-page .edit-row {
-margin-top: 10px;
-}
 
-.post-page .edit-btn {
-display: inline-block;
-padding: 5px 10px;
-border: 1px solid #ccc;
-border-radius: 4px;
-background-color: #f0f0f0;
-color: #555;
-text-decoration: none;
-font-size: 14px;
-}
 
 time {
 color: #888;
@@ -336,23 +328,9 @@ font-size: 16px;
 margin-bottom: 20px;
 }
 
-.edit-row {
-margin-bottom: 20px;
-}
 
-.edit-btn:hover {
-background-color: #0056b3;
-}
 
-.edit-btn {
-display: inline-block;
-padding: 10px 20px;
-background-color: #007bff;
-color: #fff;
-border-radius: 4px;
-text-decoration: none;
-transition: background-color 0.3s ease;
-}
+
 
 .delete-modal {
 margin-top: 20px;
@@ -397,4 +375,66 @@ justify-content: center;
 height: 300px;
 font-size: 18px;
 color: #888;
+}
+
+
+/* post page css */
+/* app.css */
+
+/* Styles for posted events */
+.posted-events {
+  float: left;
+  width: 45%;
+  margin-bottom: 20px;
+  background-color: gray;
+  padding: 10px;
+}
+
+.posted-events h2 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.posted-events a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+.posted-events a:hover {
+  background-color: #ebebeb;
+}
+
+/* Styles for attended events */
+.attended-events {
+  float: right;
+  width: 50%;
+  margin-bottom: 20px;
+  background-color: lightblue;
+  padding: 10px;
+}
+
+.attended-events h2 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.attended-events a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+.attended-events a:hover {
+  background-color: #ebebeb;
 }

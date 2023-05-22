@@ -11,15 +11,16 @@ const Post= require('./models/Posts');
 const multer = require('multer');
 const uploadMiddleware= multer({dest : './middle'});
 const fs = require('fs');
-
 const app = express();
 app.use(express.json());
 app.use(cors({credentials:true, origin:'http://localhost:3000'}));
 dotenv.config();
 const salt = bcrypt.genSaltSync(10);
 const secret = process.env.SECRET_KEY;
+const { body, validationResult } = require('express-validator');
 app.use(cookieParser());
 app.use('/middle', express.static(__dirname + '/middle'));
+app.use('/models/Attend', require('./routes/Attend'));
 
 
 
@@ -137,74 +138,91 @@ app.get('/userprofile', async (req, res) => {
 
 
 //a post request
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    const { originalname, path } = req.file;
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-      if (err) {
-        throw err;
+// POST /post - Create a new post
+app.post(
+  '/post',
+  uploadMiddleware.single('file'),
+  [
+    body('title').notEmpty().withMessage('Title is required'),
+    body('numberOfPeople')
+      .notEmpty().withMessage('Number of people is required')
+      .isInt({ min: 0 }).withMessage('Number of people must be a positive integer'),
+    // Add more validation rules for other fields
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
       }
 
-      const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
-      const postDoc = await Post.create({
-        title,
-        numberOfPeople,
-        dateTime,
-        eventType,
-        privetPublic,
-        postCode,
-        coverImg: newPath,
-        summary,
-        author: info.id,
+      const { originalname, path } = req.file;
+      const parts = originalname.split('.');
+      const ext = parts[parts.length - 1];
+      const newPath = path + '.' + ext;
+      fs.renameSync(path, newPath);
+
+      const { token } = req.cookies;
+      jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) {
+          throw err;
+        }
+
+        const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, attending, attendeeCount, summary } = req.body;
+        const postDoc = await Post.create({
+          title,
+          numberOfPeople,
+          dateTime,
+          eventType,
+          privetPublic,
+          postCode,
+          attending: false,
+          attendeeCount: 0,
+          coverImg: newPath,
+          summary,
+          author: info.id,
+        });
+
+        res.json(postDoc);
       });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  } 
+);
 
-      res.json(postDoc);
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-
-//put request
-app.put(`/post/:id`, async (req, res) => {
+// PUT /post/:id - Update a post
+app.put('/post/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary } = req.body;
-    
+    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, attending, attendeeCount, summary } = req.body;
     const postDoc = await Post.findById(id);
-    
+
     if (!postDoc) {
       return res.status(404).json({ error: 'Post not found' });
     }
-    
+
     postDoc.title = title || postDoc.title;
     postDoc.numberOfPeople = numberOfPeople || postDoc.numberOfPeople;
     postDoc.dateTime = dateTime || postDoc.dateTime;
     postDoc.eventType = eventType || postDoc.eventType;
     postDoc.privetPublic = privetPublic || postDoc.privetPublic;
     postDoc.postCode = postCode || postDoc.postCode;
+    postDoc.attending = attending || postDoc.attending;
+    postDoc.attendeeCount = attendeeCount || postDoc.attendeeCount;
     postDoc.summary = summary || postDoc.summary;
-    
+
     await postDoc.save();
-  
+
     res.json(postDoc);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+
 
 
 
@@ -249,7 +267,6 @@ app.delete('/post/:id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while deleting the post' });
   }
 });
-
 
 
 
