@@ -94,7 +94,7 @@ export default function Home() {
           <h3>Follow Us on</h3>
           <div className="social-media-links">
             <a href="#" className="social-media-link">
-              <i className="fab fa-facebook">crowedcast.linkedin.com</i>
+              <i className="fab fa-facebook">CrowedCast.linkedin.com</i>
             </a>
             
           </div>

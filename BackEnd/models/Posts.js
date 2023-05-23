@@ -13,7 +13,7 @@ const PostSchema = new Schema({
   coverImg: {type: String},
   
   summary: {type: String},
- 
+  counter: {type: String},
   author: {type: Schema.Types.ObjectId, ref: 'UserData'},
   attendingUsers: [
     {

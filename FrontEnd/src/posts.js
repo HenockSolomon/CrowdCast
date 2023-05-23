@@ -15,7 +15,6 @@ export default function Post({
   postCode,
   coverImg,
   createdAt,
-  attending: initialAttending,
   attendingUsers,
   summary,
   author,
@@ -23,10 +22,8 @@ export default function Post({
 }) {
   const [username, setUsername] = useState('');
   const [showFullSummary, setShowFullSummary] = useState(false);
-  const [isAttending, setIsAttending] = useState(initialAttending);
-  const [attendeeCount, setAttendeeCount] = useState(initialAttendeeCount);
-
-  const [attendedPostIds, setAttendedPostIds] = useState([]);
+  const [isAttending, setIsAttending] = useState(false);
+  const [attendeeCount, setAttendeeCount] = useState(parseInt(initialAttendeeCount));
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -42,10 +39,7 @@ export default function Post({
         const userInfo = await response.json();
         if (userInfo && userInfo.username) {
           setUsername(userInfo.username);
-          setIsAttending(initialAttending);
-          if (!userInfo.attending) {
-            setIsAttending(false); // Set isAttending to false if user is not already attending
-          }
+          setIsAttending(attendingUsers.includes(userInfo._id));
         } else {
           throw new Error('User info not available');
         }
@@ -55,7 +49,7 @@ export default function Post({
     };
 
     fetchUserProfile();
-  }, [username, initialAttending]);
+  }, [attendingUsers]);
 
   const toggleAttending = async () => {
     if (!username) {
@@ -67,22 +61,6 @@ export default function Post({
 
     // Update local state
     setIsAttending(newIsAttending);
-    setAttendedPostIds((prevIds) => {
-      if (newIsAttending) {
-        return [...prevIds, _id]; // Add the post ID
-      } else {
-        return prevIds.filter((id) => id !== _id); // Remove the post ID
-      }
-    });
-
-    // Update the attended events array with the post ID
-    setAttendedPostIds((prevIds) => {
-      if (newIsAttending) {
-        return [...prevIds, _id]; // Add the post ID
-      } else {
-        return prevIds.filter((id) => id !== _id); // Remove the post ID
-      }
-    });
 
     // Update attendee count
     setAttendeeCount((prevCount) => prevCount + (newIsAttending ? 1 : -1));
@@ -90,21 +68,15 @@ export default function Post({
     // Send API request to update attendee count on the server
     try {
       const response = await fetch(`http://localhost:8000/post/${_id}/attend`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ isAttending: newIsAttending }),
+        body: JSON.stringify({ attending: newIsAttending }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to update attendee count.');
-      }
-
-      // Update attendee count on the server
-      const data = await response.json();
-      if (data && data.attendeeCount) {
-        setAttendeeCount(data.attendeeCount);
       }
     } catch (error) {
       console.error('There was a problem with the API request:', error);
@@ -127,6 +99,8 @@ export default function Post({
   if (isEventExpired) {
     return null; // Skip rendering the post if it has already passed
   }
+
+  const isEventFull = attendeeCount >= parseInt(numberOfPeople);
 
   return (
     <div className="post-container">
@@ -166,12 +140,13 @@ export default function Post({
                 <button
                   className={`attending-btn${isAttending ? ' active' : ''}`}
                   onClick={toggleAttending}
+                  disabled={isEventFull}
                 >
-                  {isAttending ? 'Attending' : 'Attend'}
+                  {isEventFull ? 'Event Full' : isAttending ? 'Attending' : 'Attend'}
                 </button>
-                <span className="attendee-count">
-                  {attendeeCount} {attendeeCount === 0 ? 'person' : 'people'} going
-                </span>
+                {/* <span className="attendee-count">
+                  {attendeeCount} {attendeeCount === 1 ? 'person is' : 'people are'} going
+                </span> */}
               </>
             ) : (
               <button>
@@ -195,8 +170,7 @@ Post.propTypes = {
   postCode: PropTypes.string.isRequired,
   coverImg: PropTypes.string.isRequired,
   createdAt: PropTypes.string.isRequired,
-  attending: PropTypes.bool.isRequired,
-  attendingUsers: PropTypes.array,
+  attendingUsers: PropTypes.array.isRequired,
   summary: PropTypes.string.isRequired,
   author: PropTypes.shape({
     username: PropTypes.string,

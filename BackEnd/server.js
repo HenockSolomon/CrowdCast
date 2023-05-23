@@ -185,12 +185,16 @@ app.put('/userprofile', async (req, res) => {
 
 //a post request
 
-app.post( '/post', uploadMiddleware.single('file'),
+app.post(
+  '/post',
+  uploadMiddleware.single('file'),
   [
     body('title').notEmpty().withMessage('Title is required'),
     body('numberOfPeople')
-      .notEmpty().withMessage('Number of people is required')
-      .isInt({ min: 0 }).withMessage('Number of people must be a positive integer'),
+      .notEmpty()
+      .withMessage('Number of people is required')
+      .isInt({ min: 0 })
+      .withMessage('Number of people must be a positive integer'),
     // Add more validation rules for other fields
   ],
   async (req, res) => {
@@ -212,7 +216,16 @@ app.post( '/post', uploadMiddleware.single('file'),
           throw err;
         }
 
-        const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode,summary, attendingUsers } = req.body;
+        const {
+          title,
+          numberOfPeople,
+          dateTime,
+          eventType,
+          privetPublic,
+          postCode,
+          summary,
+          attendingUsers,
+        } = req.body;
         const postDoc = await Post.create({
           title,
           numberOfPeople,
@@ -222,6 +235,7 @@ app.post( '/post', uploadMiddleware.single('file'),
           postCode,
           coverImg: newPath,
           summary,
+          counter: 0, // Initialize the counter as 0
           attendingUsers,
           author: decodedToken.id,
         });
@@ -232,14 +246,24 @@ app.post( '/post', uploadMiddleware.single('file'),
       console.error(error);
       res.status(500).json({ error: 'Server error' });
     }
-  } 
+  }
 );
 
 // PUT /post/:id - Update a post
 app.put('/post/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, numberOfPeople, dateTime, eventType, privetPublic, postCode, summary, attendingUsers } = req.body;
+    const {
+      title,
+      numberOfPeople,
+      dateTime,
+      eventType,
+      privetPublic,
+      postCode,
+      summary,
+      attendingUsers,
+      counter,
+    } = req.body;
     const postDoc = await Post.findById(id);
 
     if (!postDoc) {
@@ -254,15 +278,45 @@ app.put('/post/:id', async (req, res) => {
     postDoc.postCode = postCode || postDoc.postCode;
     postDoc.summary = summary || postDoc.summary;
     postDoc.attendingUsers = attendingUsers || postDoc.attendingUsers;
+    postDoc.counter = counter || postDoc.counter; // Update the counter value
 
     await postDoc.save();
 
     res.json(postDoc);
   } catch (error) {
-    console.error(error); 
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// PUT /post/:id/attend - Increment attendee count
+// PUT /post/:id/attend - Update attendee count
+app.put('/post/:id/attend', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { incrementCounter } = req.body;
+
+    const postDoc = await Post.findById(id);
+
+    if (!postDoc) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    if (incrementCounter) {
+      postDoc.counter += 1; // Increment the counter
+    } else {
+      postDoc.counter -= 1; // Decrement the counter
+    }
+
+    await postDoc.save();
+
+    res.json({ message: 'Attendee count updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 // Assuming you have the necessary middleware and routes set up
 // const  authenticateJWT = require('./JWT');
