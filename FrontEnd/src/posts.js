@@ -23,7 +23,7 @@ export default function Post({
   const [username, setUsername] = useState('');
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
-  const [attendeeCount, setAttendeeCount] = useState(parseInt(initialAttendeeCount));
+  const [attendeeCount, setAttendeeCount] = useState(initialAttendeeCount);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -63,11 +63,11 @@ export default function Post({
     setIsAttending(newIsAttending);
 
     // Update attendee count
-    setAttendeeCount((prevCount) => prevCount + (newIsAttending ? 1 : -1));
+    setAttendeeCount(prevCount => prevCount + (newIsAttending ? 1 : -1));
 
     // Send API request to update attendee count on the server
     try {
-      const response = await fetch(`http://localhost:8000/post/${_id}/attend`, {
+      const response = await fetch(`http://localhost:8000/post/${_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -77,6 +77,19 @@ export default function Post({
 
       if (!response.ok) {
         throw new Error('Failed to update attendee count.');
+      }
+      if (newIsAttending) {
+        const userResponse = await fetch('http://localhost:8000/userprofile/eventsAttending', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ postID: _id, title }),
+        });
+  
+        if (!userResponse.ok) {
+          throw new Error('Failed to update user eventsAttending.');
+        }
       }
     } catch (error) {
       console.error('There was a problem with the API request:', error);
@@ -144,9 +157,9 @@ export default function Post({
                 >
                   {isEventFull ? 'Event Full' : isAttending ? 'Attending' : 'Attend'}
                 </button>
-                {/* <span className="attendee-count">
+                <span className="attendee-count">
                   {attendeeCount} {attendeeCount === 1 ? 'person is' : 'people are'} going
-                </span> */}
+                </span>
               </>
             ) : (
               <button>

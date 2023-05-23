@@ -7,7 +7,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const UserData = require('./models/UserData');
+const User= require('./models/UserData');
 const Post= require('./models/Posts');
 const Attend = require('./models/Attend');
 const multer = require('multer');
@@ -57,18 +57,18 @@ app.post('/signup', async (req, res) => {
     }
 
   try {
-    const existingUser = await UserData.findOne({ username, email });
+    const existingUser = await User.findOne({ username, email });
     if (existingUser) {
       return res.status(409).json({ msg: 'Username already exists' });
     }
     
     if (!existingUser) {
-      const userData = await UserData.create({
+      const user = await User.create({
       username,
       email,
       password:bcrypt.hashSync(password,salt)
     });
-    res.status(200).json(userData);
+    res.status(200).json(user);
   }
 
   } catch (error) {
@@ -88,13 +88,13 @@ app.post('/login', async (req, res) => {
   }
 
   try {
-    const userData = await UserData.findOne({ username });
+    const user = await User.findOne({ username });
 
-    if (!userData) {
+    if (!user) {
       return res.status(401).json({ msg: 'Invalid username or password' });
     }
 
-    const passwordMatch = await bcrypt.compareSync(password, userData.password);
+    const passwordMatch = await bcrypt.compareSync(password, user.password);
 
     if (!passwordMatch) {
       return res.status(401).json({ msg: 'Invalid username or password' });
@@ -103,10 +103,10 @@ app.post('/login', async (req, res) => {
     if (passwordMatch) {
      jwt.sign({ 
       username, 
-      id: userData._id, 
-      email: userData.email, 
-      password: userData.password , 
-      attendedEvents: userData.attendedEvents
+      id: user._id, 
+      email: user.email, 
+      password: user.password , 
+      eventsAttending: user.eventsAttending
     }, 
     secret, {}, (err, token) => {
       if (err) throw err;
@@ -114,15 +114,15 @@ app.post('/login', async (req, res) => {
       res.cookie('token', token).json({
        
         username,
-        id: userData._id,
-        email: userData.email,
-        password : userData.password,
-        attendedEvents: userData.attendedEvents,
+        id: user._id,
+        email: user.email,
+        password : user.password,
+        eventsAttending: user.eventsAttending,
         msg: 'Successfully logged in',
       });
     });
     } else {
-      res.json({ status: 'error', userData: false });
+      res.json({ status: 'error', user: false });
     }
   } catch (error) {
     console.error(error);
@@ -155,7 +155,7 @@ app.put('/userprofile', async (req, res) => {
     const { id, attendedEvents } = req.body;
 
     // Assuming you have a User model/schema defined
-    const user = await UserData.findById(id);
+    const user = await User.findById(id);
 
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
@@ -216,28 +216,9 @@ app.post(
           throw err;
         }
 
-        const {
-          title,
-          numberOfPeople,
-          dateTime,
-          eventType,
-          privetPublic,
-          postCode,
-          summary,
-          attendingUsers,
+        const {title,numberOfPeople,dateTime,eventType, privatePublic,postCode,  summary,
         } = req.body;
-        const postDoc = await Post.create({
-          title,
-          numberOfPeople,
-          dateTime,
-          eventType,
-          privetPublic,
-          postCode,
-          coverImg: newPath,
-          summary,
-          counter: 0, // Initialize the counter as 0
-          attendingUsers,
-          author: decodedToken.id,
+        const postDoc = await Post.create({ title, numberOfPeople,  dateTime, eventType, privatePublic, postCode, coverImg: newPath, summary, attendingCounter: 0,   author: decodedToken.id,
         });
 
         res.json(postDoc);
@@ -258,27 +239,27 @@ app.put('/post/:id', async (req, res) => {
       numberOfPeople,
       dateTime,
       eventType,
-      privetPublic,
+      privatePublic,
       postCode,
       summary,
       attendingUsers,
-      counter,
+      attendingCounter,
     } = req.body;
+    
+    
     const postDoc = await Post.findById(id);
 
     if (!postDoc) {
       return res.status(404).json({ error: 'Post not found' });
     }
-
     postDoc.title = title || postDoc.title;
     postDoc.numberOfPeople = numberOfPeople || postDoc.numberOfPeople;
     postDoc.dateTime = dateTime || postDoc.dateTime;
     postDoc.eventType = eventType || postDoc.eventType;
-    postDoc.privetPublic = privetPublic || postDoc.privetPublic;
+    postDoc.privatePublic = privatePublic || postDoc.privatePublic;
     postDoc.postCode = postCode || postDoc.postCode;
     postDoc.summary = summary || postDoc.summary;
-    postDoc.attendingUsers = attendingUsers || postDoc.attendingUsers;
-    postDoc.counter = counter || postDoc.counter; // Update the counter value
+    postDoc.attendingCounter = attendingCounter || postDoc.attendingCounter;
 
     await postDoc.save();
 
@@ -289,74 +270,61 @@ app.put('/post/:id', async (req, res) => {
   }
 });
 
-// PUT /post/:id/attend - Increment attendee count
-// PUT /post/:id/attend - Update attendee count
-app.put('/post/:id/attend', async (req, res) => {
+
+
+app.post('/userprofile/eventsAttending', async (req, res) => {
   try {
-    const { id } = req.params;
-    const { incrementCounter } = req.body;
+    // Get the user's ID and event details from the request body
+    const { userID, postID, title } = req.body;
 
-    const postDoc = await Post.findById(id);
+    // Find the user by their ID
+    const user = await User.findById(userID);
 
-    if (!postDoc) {
-      return res.status(404).json({ error: 'Post not found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    if (incrementCounter) {
-      postDoc.counter += 1; // Increment the counter
-    } else {
-      postDoc.counter -= 1; // Decrement the counter
-    }
+    // Add the event details to the user's eventsAttending array
+    user.eventsAttending.push({ postID, title });
 
-    await postDoc.save();
+    // Save the updated user object
+    await user.save();
 
-    res.json({ message: 'Attendee count updated successfully' });
+    res.status(200).json({ message: 'User eventsAttending updated successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error updating user eventsAttending:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+app.put('/post/:postID', async (req, res) => { 
+  try {
+    const { postId } = req.params;
+    const { attending } = req.body;
 
-// Assuming you have the necessary middleware and routes set up
-// const  authenticateJWT = require('./JWT');
+    // Find the post by its ID
+    const post = await Post.findById(postId);
 
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
 
+    // Update the attendingUsers array based on the attending flag
+    if (attending) {
+      post.attendingUsers.push(req.user._id); // Assuming you have authenticated and have access to the user ID
+    } else {
+      post.attendingUsers = post.attendingUsers.filter(userId => userId.toString() !== req.user._id.toString());
+    }
 
-// POST /post/:id/attend
-// app.put('/post/:id/attend', authenticateJWT, async (req, res) => {
-//   const { id } = req.params;
-//   const { attending } = req.body;
+    // Save the updated post object
+    await post.save();
 
-//   try {
-//     const post = await Post.findById(id);
-
-//     if (!post) {
-//       return res.status(404).json({ message: 'Post not found' });
-//     }
-
-//     if (attending) {
-//       // Add the user ID to the attendingUsers array if it's not already present
-//       if (!post.attendingUsers.includes(req.user.id)) {
-//         post.attendingUsers.push(req.user.id);
-//       }
-//     } else {
-//       // Remove the user ID from the attendingUsers array
-//       post.attendingUsers = post.attendingUsers.filter(userId => userId.toString() !== req.user.id.toString());
-//     }
-
-//     await post.save();
-
-//     res.json({ message: 'Attending status updated successfully' });
-//   } catch (error) {
-//     console.error('Error updating attending status:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
-
-
-
-
+    res.status(200).json({ message: 'Post attendingUsers updated successfully' });
+  } catch (error) {
+    console.error('Error updating post attendingUsers:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 

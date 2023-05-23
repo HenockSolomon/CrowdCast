@@ -17,8 +17,8 @@ const UserDetailSchema = new Schema({
     type: String,
     required: true,
   },
-  attendedEvents: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  eventsAttending: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 });
 
-const UserDetailModel = model("UserData", UserDetailSchema);
+const UserDetailModel = model("User", UserDetailSchema);
 module.exports = UserDetailModel;
