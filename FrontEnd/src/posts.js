@@ -79,7 +79,7 @@ export default function Post({
         throw new Error('Failed to update attendee count.');
       }
       if (newIsAttending) {
-        const userResponse = await fetch('http://localhost:8000/userprofile/eventsAttending', {
+        const userResponse = await fetch('http://localhost:8000/userprofile', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

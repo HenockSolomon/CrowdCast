@@ -91,7 +91,7 @@ export default function Userprofile() {
           )}
         </div>
 
-        {/* <div className="attended-events">
+        <div className="attended-events">
           <h2>Attending Events</h2>
           {attendedEventTitles.length > 0 ? (
             attendedEventTitles.map((title, index) => (
@@ -100,7 +100,7 @@ export default function Userprofile() {
           ) : (
             <p>No attended events</p>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );
