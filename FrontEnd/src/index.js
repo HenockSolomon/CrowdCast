@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 import LoginSignup from './Pages/LoginSignup';
 import UserProfile from './Pages/UserProfile';
 import CreatePost from './Pages/CreatePost';

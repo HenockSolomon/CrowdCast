@@ -19,7 +19,7 @@ export default function Home() {
         const userInfo = await response.json();
         if (userInfo && userInfo.username) {
           setUsername(userInfo.username);
-          console.log(userInfo);
+          
         } else {
           throw new Error('User info not available');
         }

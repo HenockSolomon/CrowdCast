@@ -1,7 +1,9 @@
 * {
   text-decoration: none;
   color: rgb(3, 3, 108);
+  
 }
+
 
 .navbar {
   display: flex;
@@ -51,11 +53,6 @@
   color: black;
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.39);
 }
-.post-container {
-  display: grid;
-  grid-template-columns: 100%;
-  grid-gap: 20px;
-}
 
 
 .containerHome {
@@ -103,22 +100,103 @@
     align-items: center;
     justify-content: center;
   }
-.post{
-  margin-top: 0px;
+ 
+}
+.entire {
+  display: inline-block;
+  max-width: 30%;
+  height: 750px;
+  gap: 10px;
+  margin: 0 auto;
+  margin-left: 30px;
+  margin-bottom: 60px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  
+ 
+
+}
+.loading{
+  height: 10vh;
+}
+/* 
+.post {
+ display: inline-grid;
+  width: 100%;
+  gap: 50px;
+  margin: 10px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post .image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.post .image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post h2 {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.post .texts {
   display: block;
 }
-.post .image{
-  width : 100%;
-}
-.post .texts{
-display: block;
-}
+
 .containerHome {
   width: 100%;
   height: 350px;
 }
 
+.post p.info {
+  font-size: 14px;
+  margin-top: 5px;
+  color: #888;
 }
+
+.post .summary {
+  margin-top: 10px;
+}
+
+.post .read-more {
+  margin-top: 5px;
+  cursor: pointer;
+  color: blue;
+}
+
+.post .attending-btn {
+  width: 100px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.post .attending-btn.active {
+  background-color: green;
+  color: white;
+}
+
+.post .attendee-count {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #888;
+} */
+
+
 
 @media (min-width: 651px) and (max-width: 1024px) {
   .logo {

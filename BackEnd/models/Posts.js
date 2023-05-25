@@ -13,7 +13,7 @@ const PostSchema = new Schema({
   summary: { type: String },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   attendingCounter: { type: Number, default: 0 },
-  attendingUsers: [{ type: Schema.Types.ObjectId, ref: 'User'}],
+  attendingUsers: [{}],
 }, {
   timestamps: true,
 });

@@ -17,7 +17,7 @@ const UserDetailSchema = new Schema({
     type: String,
     required: true,
   },
-  eventsAttending: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  eventsAttending: [{}],
 });
 
 const UserDetailModel = model("User", UserDetailSchema);

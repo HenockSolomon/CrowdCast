@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './HeaderPublic';
 import About from './Pages/AboutUs';
 import CreatePost from './Pages/CreatePost';

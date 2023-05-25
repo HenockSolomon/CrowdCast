@@ -114,15 +114,15 @@ export default function EditPost() {
       >
        
       
-                    <option value="private">For close family/friends</option>
-                    <option value="public">For co-workers</option>
-                    <option value="public">For charity</option>
-                    <option value="public">For public social gathering</option>
-                    <option value="public">For conference</option>
-                    <option value="public">For workshop</option>
-                    <option value="public">For exhibition</option>
-                    <option value="public">For concert</option>
-                    <option value="public">For sport event</option>
+                    <option value="family/friends">For close family/friends</option>
+                    <option value="co-workers">For co-workers</option>
+                    <option value="charity">For charity</option>
+                    <option value="social">For public social gathering</option>
+                    <option value="conference">For conference</option>
+                    <option value="workshop">For workshop</option>
+                    <option value="exhibition">For exhibition</option>
+                    <option value="concert">For concert</option>
+                    <option value="sport">For sport event</option>
       </select><br/>
 
       <label htmlFor="eventType">Event Type:</label><br/>
@@ -138,7 +138,7 @@ export default function EditPost() {
             <option value="costume">Costume</option>
             <option value="black tie">Black Tie</option>
             <option value="white tie">White Tie</option>
-            <option value="white tie">cocktail</option>
+            <option value="cocktail">cocktail</option>
       </select>   <br/>
    
 

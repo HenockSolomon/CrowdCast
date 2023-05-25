@@ -1,73 +1,87 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../HeaderPublic';
 
 export default function Userprofile() {
   const [username, setUsername] = useState('');
+  const [title, setTitle] = useState('');
   const [postedEvents, setPostedEvents] = useState([]);
-  const [attendedEvents, setAttendedEvents] = useState([]);
-  const [attendedEventTitles, setAttendedEventTitles] = useState([]);
+  const [attendingEvents, setAttendingEvents] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
 
+
+
+//////////////////////////////////////////////////////////////////////for attended Events //////////////////////////////////////////////////////////////////
   useEffect(() => {
-    fetch('http://localhost:8000/userprofile', {
-      credentials: 'include',
-    })
-      .then(response => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/userprofile', {
+          credentials: 'include',
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json();
-      })
-      .then(userInfo => {
+
+        const userInfo = await response.json();
         setUsername(userInfo.username);
+        setTitle(userInfo.title);
         setPostedEvents(userInfo.postedEvents || []);
-        setAttendedEvents(userInfo.attendedEvents || []);
-      })
-      .catch(error => {
+        setUserInfo(userInfo);
+
+        console.log(userInfo);
+      } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
-      });
+      }
+    };
+
+    fetchUserProfile();
   }, []);
-
   useEffect(() => {
-    fetch('http://localhost:8000/post')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(posts => {
-        const filteredPosts = posts.filter(post => post.author.username === username);
-        setPostedEvents(filteredPosts);
-      })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-      });
-  }, [username]);
+    const fetchData = async () => {
+      try {
+        if (username) {
+          const response = await fetch('http://localhost:8000/post');
 
-  useEffect(() => {
-    const fetchAttendedEventTitles = async () => {
-      const attendedTitles = [];
-
-      for (const event of attendedEvents) {
-        try {
-          const response = await fetch(`http://localhost:8000/post/${event._id}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-          const post = await response.json();
-          attendedTitles.push(post.title);
-        } catch (error) {
-          console.error(`Error fetching post ${event._id}:`, error);
-        }
-      }
 
-      setAttendedEventTitles(attendedTitles);
+          const posts = await response.json();
+          const filteredPosts = posts.filter(post => post.author.username === username);
+          setPostedEvents(filteredPosts);
+        }
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
     };
 
-    fetchAttendedEventTitles();
-  }, [attendedEvents]);
+    fetchData();
+  }, [username]);
 
+//////////////////////////////////////////for already created posts////////////////////////////////////////////////////////////////
+
+  useEffect(() => {
+    const fetchAttendingEvents = async () => {
+      try {
+        if (userInfo?.eventsAttending) {
+          setAttendingEvents(userInfo.eventsAttending);
+        }
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
+    };
+
+    fetchAttendingEvents();
+  }, [userInfo]);
+
+
+
+
+
+
+
+  
   return (
     <div>
       <Navbar />
@@ -84,18 +98,22 @@ export default function Userprofile() {
             ))
           ) : (
             <>
-            <p>Hi {username}. You have no posted events
-            </p>
-           <Link to={'/'}><p>Please visit the <b> home page</b> to see any events you might be interested in :)</p>
-            </Link> </>
+              <p>Hi {username}. You have no posted events.</p>
+              <Link to={'/'}>
+                <p>
+                  Please visit the <b>home page</b> to see any events you might be interested in :)
+                </p>
+              </Link>
+            </>
           )}
         </div>
 
         <div className="attended-events">
           <h2>Attending Events</h2>
-          {attendedEventTitles.length > 0 ? (
-            attendedEventTitles.map((title, index) => (
-              <div key={index}>{title}</div>
+          {attendingEvents.length > 0 ? (
+            attendingEvents.map(event => (
+              <Link key={event._id} to={`/post/${event._id}`}>
+                <div>{event.title}</div></Link>
             ))
           ) : (
             <p>No attended events</p>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Post from "../posts";
 import HomePage from "../HomePage";
+import '../App.css';
+
 export default function IndexPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ export default function IndexPage() {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>; // Display a loading state while fetching data
+    return <p className="loading">Loading...</p>; // Display a loading state while fetching data
   }
 
   if (error) {
@@ -28,9 +30,9 @@ export default function IndexPage() {
   }
 
   return (
-    <>
+    <div >
       {posts.length > 0 &&
         posts.map((post) => <Post key={post._id} {...post} />)}
-    </>
+    </div>
   );
 }

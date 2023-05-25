@@ -41,7 +41,7 @@ app.use('/middle', express.static(__dirname + '/middle'));
 
 app.get ('/', (req, res) => {
     try {
-        const message = 'connection is working now'; 
+        const message = 'connection is working now!'; 
         res.send(message);
     } catch(error){
         res.send(error);
@@ -146,68 +146,82 @@ app.get('/userprofile', async (req, res) => {
   }
 });
 
+// Add event to user's eventsAttending array
+app.put('/:userId', async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    if (!user) {
+      return res.status(404).send({ msg: 'User not found' });
+    }
 
-app.put('/userprofile/:userId', async (req, res) => {
-    try {
-      let user = await User.findOne({ _id: req.params.userId});
-      if (!user) {
-        return res.status(404).send({ msg: 'User not found' });
-      }
-  
-      let event =  await Post.findOne({ _id: req.body.eventId}); 
-     
-      if (!event){
-        return res.status(404).send({msg: 'event not available'});
-      }
-      console.log(user)
+    const eventId = req.body._id;
+    const eventExists = user.eventsAttending.some((event) => event._id.toString() === eventId);
 
-    }catch (error) {
-            console.error(error); 
-            res.status(500).json({ msg: 'Internal Server Error' });
-          }
+    if (eventExists) {
+      return res.status(400).send({ msg: 'Event already exists in user eventsAttending' });
+    }
 
-        });  
+    const event = await Post.findOne({ _id: eventId });
+    if (!event) {
+      return res.status(404).send({ msg: 'Event not available' });
+    }
+ 
+    user.eventsAttending.push(event);
+    const updatedUser = await user.save();
 
+    // Check if the user is present in the event's attendingUsers array
+    const isUserAttending = event.attendingUsers.some((attendingUser) => attendingUser.userId.toString() === req.params.userId);
+    if (!isUserAttending) {
+      event.attendingUsers.push({ userId: user._id, username: user.username });
+      event.attendingCounter = event.attendingUsers.length;
+      await event.save();
+    } 
 
+    res.send(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Internal Server Error' });
+  }
+});
 
-// app.put('/userprofile/:userId', async (req, res) => {
-//   try {
-//     let user = await User.findOne({ userId: req.params.userId});
-//     if (!user) {
-//       return res.status(404).send({ msg: 'User not found' });
-//     }
+// Update event's attendingUsers array
+app.put('/post/:eventId/:userId', async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userId });
+    if (!user) {
+      return res.status(404).send({ msg: 'User not found' });
+    }
+ 
+    const event = await Post.findOne({ _id: req.params.eventId });
+    if (!event) {
+      return res.status(404).send({ msg: 'Event not available' });
+    }
 
-//     let event =  await Post.findOne({ eventId: req.body.eventId}); 
-   
-//     if (!event){
-//       return res.status(404).send({msg: 'event not available'});
-//     }
-//     console.log(user)
+    const isAttending = event.attendingUsers.some(
+      (attendingUser) => attendingUser.userId.toString() === req.params.userId
+    );
 
-//     // const { id, attendedEvents } = req.body;
+    if (isAttending) {
+      return res.status(400).send({ msg: 'User is already attending the event' });
+    }
 
-//     // // Assuming you have a User model/schema defined
-//     // const user = await User.findById(id);
+    // Check if the event is present in the user's eventsAttending array
+    const eventExists = user.eventsAttending.some((event) => event._id.toString() === req.params.eventId);
+    if (!eventExists) {
+      user.eventsAttending.push(event);
+      await user.save();
+    }
 
-//     // if (!user) {
-//     //   return res.status(404).json({ msg: 'User not found' });
-//     // }
+    event.attendingUsers.push({ userId: user._id, username: user.username });
+    event.attendingCounter = event.attendingUsers.length;
+    await event.save(); 
 
-//     // // Convert the attendedEvents array to an array of ObjectId values
-//     // const attendedEventIds = attendedEvents.map(event => new ObjectId(event.id));
-
-//     // // Update the attendedEvents array in the user document
-//     // user.attendedEvents = attendedEventIds;
-
-//     // // Save the updated user document
-//     // await user.save();
-
-//   //   res.json({ msg: 'Attended events updated successfully' });
-//   } catch (error) {
-//     console.error(error); 
-//     res.status(500).json({ msg: 'Internal Server Error' });
-//   }
-// });
+    res.json({ msg: 'User and event updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Internal Server Error' });
+  }
+});
 
 
 
@@ -411,7 +425,7 @@ app.post('/logout', (req, res) => {
 });
 
 
-
+ 
 
 
 
