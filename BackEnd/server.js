@@ -149,7 +149,6 @@ app.get('/userprofile', async (req, res) => {
 
 
 
-
 app.put('/post/:eventId/:userId', async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
@@ -173,23 +172,33 @@ app.put('/post/:eventId/:userId', async (req, res) => {
     if (isUserAttending) {
       return res.status(400).send({ msg: 'User is already attending the event' });
     }
-
-    user.eventsAttending.push(event);
+ 
+    user.eventsAttending.push({ _id: event._id, title: event.title });
     const updatedUser = await user.save();
-
 
     event.attendingUsers.push({ userId: user._id, username: user.username });
     event.attendingCounter = event.attendingUsers.length;
     await event.save();
 
-    res.send(updatedUser);
+    const responseData = {
+      user: {
+        username: user.username,
+        userId: user._id,
+      },
+      post: {
+        title: event.title,
+        postId: event._id,
+      },
+    };
+
+    res.send(responseData);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' });
   }
-}); 
+});
 
-
+ 
 
 app.delete('/post/:eventId/:userId', async (req, res) => {
   try {
@@ -236,7 +245,7 @@ app.delete('/post/:eventId/:userId', async (req, res) => {
 
 
 
-
+  
 
 
 

@@ -4,7 +4,8 @@ import { formatISO9075 } from "date-fns";
 import { UserContext } from "../Props/UserInfo";
 import Navbar from "../HeaderPublic";
 import axios from "axios";
-import Post from "../posts"
+
+
 export default function PostPage() {
   const { userInfo } = useContext(UserContext);
   const [post, setPost] = useState(null);

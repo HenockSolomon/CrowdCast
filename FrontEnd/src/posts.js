@@ -3,7 +3,7 @@ import { formatISO9075, isAfter, subDays } from 'date-fns';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const MAX_SUMMARY_LENGTH = 150; // Maximum characters for the summary
+// const MAX_SUMMARY_LENGTH = 30; // Maximum characters for the summary
 
 export default function Post({
   _id,
@@ -16,12 +16,12 @@ export default function Post({
   coverImg,
   createdAt,
   attendingUsers,
-  summary,
+  // summary,
   author,
 }) {
   const [username, setUsername] = useState('');
   const [userInfo, setUserInfo] = useState(null);
-  const [showFullSummary, setShowFullSummary] = useState(false);
+  // const [showFullSummary, setShowFullSummary] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
 
   useEffect(() => {
@@ -53,37 +53,52 @@ export default function Post({
     fetchUserProfile();
   }, [attendingUsers]);
 
+  const cancleAttendEvent = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to cancel attendance.');
+      }
+
+      const profileResponse = await fetch('http://localhost:8000/userprofile', {
+        credentials: 'include',
+      });
+
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch user profile data');
+      }
+
+      const updatedUserInfo = await profileResponse.json();
+      setUserInfo(updatedUserInfo);
+      setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
+    } catch (error) {
+      console.error('There was a problem with the API request:', error);
+    }
+  };
+
   const toggleAttending = async () => {
     if (!username) {
       alert('Please log in to attend the event.');
       return;
     }
 
-    const newIsAttending = !isAttending;
-
-    try {
-      const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ attending: newIsAttending }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update attendee count.');
-      }
-
-      if (newIsAttending) {
-        const userResponse = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
+    if (isAttending) {
+      cancleAttendEvent();
+    } else {
+      try {
+        const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({ attending: true }),
         });
 
-        if (!userResponse.ok) {
-          throw new Error('Failed to update user eventsAttending.');
+        if (!response.ok) {
+          throw new Error('Failed to update attendee count.');
         }
 
         const profileResponse = await fetch('http://localhost:8000/userprofile', {
@@ -97,20 +112,20 @@ export default function Post({
         const updatedUserInfo = await profileResponse.json();
         setUserInfo(updatedUserInfo);
         setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
+      } catch (error) {
+        console.error('There was a problem with the API request:', error);
       }
-    } catch (error) {
-      console.error('There was a problem with the API request:', error);
     }
   };
 
-  const toggleSummary = () => {
-    setShowFullSummary(!showFullSummary);
-  };
+  // const toggleSummary = () => {
+  //   setShowFullSummary(!showFullSummary);
+  // };
 
-  const displaySummary =
-    summary.length <= MAX_SUMMARY_LENGTH || showFullSummary
-      ? summary
-      : `${summary.substring(0, MAX_SUMMARY_LENGTH)}...`;
+  // const displaySummary =
+  //   summary.length <= MAX_SUMMARY_LENGTH || showFullSummary
+  //     ? summary
+  //     : `${summary.substring(0, MAX_SUMMARY_LENGTH)}...`;
 
   const currentDate = new Date();
   const eventDate = new Date(dateTime);
@@ -123,7 +138,7 @@ export default function Post({
   return (
     <div className="CardGroup entire col-md-5">
       <div className="card">
-        <img className="card-img-top" src={`http://localhost:8000/${coverImg}`} alt={title} />
+        <img className="card-img-top custom-card-image " src={`http://localhost:8000/${coverImg}`} alt={title} />
         <div className="card-body">
           <h2 className="card-title">
             <Link to={`/post/${_id}`}>{title}</Link>
@@ -143,7 +158,7 @@ export default function Post({
             <br />
             Capacity: {numberOfPeople}
             <br />
-            {displaySummary && (
+            {/* {displaySummary && (
               <>
                 <span
                   className="summary"
@@ -155,7 +170,7 @@ export default function Post({
                   </span>
                 )}
               </>
-            )}
+            )} */}
           </p>
           <div>
             {username ? (
@@ -176,6 +191,7 @@ export default function Post({
         </div>
       </div>
     </div>
+    
   );
 }
 
@@ -190,7 +206,7 @@ Post.propTypes = {
   coverImg: PropTypes.string.isRequired,
   createdAt: PropTypes.string.isRequired,
   attendingUsers: PropTypes.array.isRequired,
-  summary: PropTypes.string.isRequired,
+  // summary: PropTypes.string.isRequired,
   author: PropTypes.shape({
     username: PropTypes.string,
   }),

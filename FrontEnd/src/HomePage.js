@@ -40,15 +40,11 @@ export default function Home() {
           {username ? (
             <div className="cont">
               <div className="coverImgContainer">
-                <img
-                  src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1138&q=80"
-                  className="coverImg"
-                  alt="child play"
-                />
+               
               </div>
               <div className="headingContent">
-                <h1>Hello {username}: here are your feeds</h1>
-                <h2>Find activities you want</h2>
+                <h1>Hello {username}: here are your feeds
+                Find activities you want</h1>
               </div>
             </div>
           ) : (

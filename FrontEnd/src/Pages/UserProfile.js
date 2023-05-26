@@ -9,9 +9,6 @@ export default function Userprofile() {
   const [attendingEvents, setAttendingEvents] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
 
-
-
-//////////////////////////////////////////////////////////////////////for attended Events //////////////////////////////////////////////////////////////////
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -28,8 +25,6 @@ export default function Userprofile() {
         setTitle(userInfo.title);
         setPostedEvents(userInfo.postedEvents || []);
         setUserInfo(userInfo);
-
-        console.log(userInfo);
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
       }
@@ -37,6 +32,7 @@ export default function Userprofile() {
 
     fetchUserProfile();
   }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,42 +55,76 @@ export default function Userprofile() {
     fetchData();
   }, [username]);
 
-//////////////////////////////////////////for already created posts////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    const fetchAttendingEvents = async () => {
+      
+        try {
+          if (userInfo?.eventsAttending) {
+            const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
+            const attendingEventsData = [];
+      
+            for (const eventId of attendingEventIds) {
+              const response = await fetch(`http://localhost:8000/post/${eventId}/`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              });
+      
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+      
+              const attendingEventData = await response.json();
+              attendingEventsData.push(attendingEventData);
+            }
+      
+            // Ensure the correct property name is used for the postId
+            const attendingEventsWithId = attendingEventsData.map(event => ({
+              postId: event._id, // Replace `_id` with the correct property name
+              title: event.title // Replace `title` with the correct property name
+            }));
+      
+            setAttendingEvents(attendingEventsWithId);
+          }
+        } catch (error) {
+          console.error('There was a problem with the fetch operation:', error);
+        }
+      
+    };
 
-useEffect(() => {
-  const fetchAttendingEvents = async () => {
+    fetchAttendingEvents();
+  }, [userInfo]);
+
+  const handleCancelEvent = async (eventId) => {
     try {
       if (userInfo?.eventsAttending) {
         const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
-        const response = await fetch('http://localhost:8000/post', {
-          method: 'POST',
+        const attendingEventsData = [];
+
+      for (const eventId of attendingEventIds) {
+        const response = await fetch(`http://localhost:8000/post/${eventId}/${userInfo.id}`, {
+          method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ eventIds: attendingEventIds })
+          }
         });
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
 
-        const attendingEventsData = await response.json();
-        setAttendingEvents(attendingEventsData);
+        const attendingEventData = await response.json();
+        attendingEventsData.push(attendingEventData);
       }
-    } catch (error) {
+
+
+      setAttendingEvents(prevState => prevState.filter(event => event.postId !== eventId));
+    } }catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }
   };
 
-  fetchAttendingEvents();
-}, [userInfo]);
-
-
-
-
-
-
-  
   return (
     <div>
       <Navbar />
@@ -125,8 +155,12 @@ useEffect(() => {
           <h2>Attending Events</h2>
           {attendingEvents.length > 0 ? (
             attendingEvents.map(event => (
-              <Link key={event._id} to={`/post/${event._id}`}>
-                <div>{event.title}</div></Link>
+              <div key={event.postId}>
+                <Link to={`/post/${event.postId}`}>
+                  <div>{event.title}</div>
+                </Link>
+                <button onClick={() => handleCancelEvent(event.postId)}>Cancel Event</button>
+              </div>
             ))
           ) : (
             <p>No attended events</p>
