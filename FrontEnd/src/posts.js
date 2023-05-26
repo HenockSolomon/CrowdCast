@@ -20,7 +20,7 @@ export default function Post({
   author,
 }) {
   const [username, setUsername] = useState('');
-  const[userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
 
@@ -40,13 +40,11 @@ export default function Post({
 
         if (userInfo && userInfo.username) {
           setUsername(userInfo.username);
-          setIsAttending(attendingUsers.some(user => user.userId === userInfo._id));
+          setIsAttending(attendingUsers.some((user) => user.userId === userInfo._id));
         } else {
           setUsername('');
           setIsAttending(false);
         }
-
-        // console.log(userInfo)
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
       }
@@ -55,24 +53,14 @@ export default function Post({
     fetchUserProfile();
   }, [attendingUsers]);
 
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////
   const toggleAttending = async () => {
     if (!username) {
       alert('Please log in to attend the event.');
       return;
     }
-    
-    const newIsAttending = !isAttending;
-  
-    // Update local state
-    setIsAttending(newIsAttending);
-  
-    // Update attendee count
 
-  
-    // Send API request to update attendee count on the server
+    const newIsAttending = !isAttending;
+
     try {
       const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
         method: 'PUT',
@@ -81,50 +69,40 @@ export default function Post({
         },
         body: JSON.stringify({ attending: newIsAttending }),
       });
-  console.log(response);
+
       if (!response.ok) {
         throw new Error('Failed to update attendee count.');
       }
-  
+
       if (newIsAttending) {
-        const userResponse = await fetch(`http://localhost:8000/${userInfo.id}`, {
+        const userResponse = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
-          
         });
 
-        
         if (!userResponse.ok) {
           throw new Error('Failed to update user eventsAttending.');
         }
+
         const profileResponse = await fetch('http://localhost:8000/userprofile', {
           credentials: 'include',
         });
-  
+
         if (!profileResponse.ok) {
           throw new Error('Failed to fetch user profile data');
         }
-  
+
         const updatedUserInfo = await profileResponse.json();
         setUserInfo(updatedUserInfo);
-        setIsAttending(updatedUserInfo.attendingEvents.some(event => event._id === _id));
-      
+        setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
       }
     } catch (error) {
       console.error('There was a problem with the API request:', error);
     }
   };
-  
 
-
-
-
-
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////
   const toggleSummary = () => {
     setShowFullSummary(!showFullSummary);
   };
@@ -142,8 +120,6 @@ export default function Post({
     return null; // Skip rendering the post if it has already passed
   }
 
-  
-
   return (
     <div className="CardGroup entire col-md-5">
       <div className="card">
@@ -153,7 +129,7 @@ export default function Post({
             <Link to={`/post/${_id}`}>{title}</Link>
           </h2>
           <p className="card-text">
-            <span className="text-muted">by: @{author && author.username}</span>
+            <span className="text-muted">by: @{author?.username}</span>
             <br />
             <time>{formatISO9075(new Date(createdAt))}</time>
             <br />
@@ -187,11 +163,9 @@ export default function Post({
                 <button
                   className={`btn btn-primary attending-btn${isAttending ? ' active' : ''}`}
                   onClick={toggleAttending}
-                  
                 >
-                  {isAttending ? 'cancel attending' : 'Attend'}
+                  {isAttending ? 'Cancel Attending' : 'Attend'}
                 </button>
-                
               </>
             ) : (
               <button className="btn btn-primary">

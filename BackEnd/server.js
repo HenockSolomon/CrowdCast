@@ -146,15 +146,18 @@ app.get('/userprofile', async (req, res) => {
   }
 });
 
-// Add event to user's eventsAttending array
-app.put('/:userId', async (req, res) => {
+
+
+
+
+app.put('/post/:eventId/:userId', async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
     if (!user) {
       return res.status(404).send({ msg: 'User not found' });
     }
 
-    const eventId = req.body._id;
+    const eventId = req.params.eventId;
     const eventExists = user.eventsAttending.some((event) => event._id.toString() === eventId);
 
     if (eventExists) {
@@ -165,58 +168,64 @@ app.put('/:userId', async (req, res) => {
     if (!event) {
       return res.status(404).send({ msg: 'Event not available' });
     }
- 
+
+    const isUserAttending = event.attendingUsers.some((attendingUser) => attendingUser.userId.toString() === req.params.userId);
+    if (isUserAttending) {
+      return res.status(400).send({ msg: 'User is already attending the event' });
+    }
+
     user.eventsAttending.push(event);
     const updatedUser = await user.save();
 
-    // Check if the user is present in the event's attendingUsers array
-    const isUserAttending = event.attendingUsers.some((attendingUser) => attendingUser.userId.toString() === req.params.userId);
-    if (!isUserAttending) {
-      event.attendingUsers.push({ userId: user._id, username: user.username });
-      event.attendingCounter = event.attendingUsers.length;
-      await event.save();
-    } 
+
+    event.attendingUsers.push({ userId: user._id, username: user.username });
+    event.attendingCounter = event.attendingUsers.length;
+    await event.save();
 
     res.send(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' });
   }
-});
+}); 
 
-// Update event's attendingUsers array
-app.put('/post/:eventId/:userId', async (req, res) => {
+
+
+app.delete('/post/:eventId/:userId', async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.userId });
     if (!user) {
       return res.status(404).send({ msg: 'User not found' });
     }
- 
-    const event = await Post.findOne({ _id: req.params.eventId });
+
+    const eventId = req.params.eventId;
+    const eventIndex = user.eventsAttending.findIndex((event) => event._id.toString() === eventId);
+
+    if (eventIndex === -1) {
+      return res.status(404).send({ msg: 'Event not found in user eventsAttending' });
+    }
+
+    user.eventsAttending.splice(eventIndex, 1);
+    await user.save();
+
+    const event = await Post.findOne({ _id: eventId });
     if (!event) {
       return res.status(404).send({ msg: 'Event not available' });
     }
 
-    const isAttending = event.attendingUsers.some(
+    const attendingUserIndex = event.attendingUsers.findIndex(
       (attendingUser) => attendingUser.userId.toString() === req.params.userId
     );
 
-    if (isAttending) {
-      return res.status(400).send({ msg: 'User is already attending the event' });
+    if (attendingUserIndex === -1) {
+      return res.status(404).send({ msg: 'User not found in event attendingUsers' });
     }
 
-    // Check if the event is present in the user's eventsAttending array
-    const eventExists = user.eventsAttending.some((event) => event._id.toString() === req.params.eventId);
-    if (!eventExists) {
-      user.eventsAttending.push(event);
-      await user.save();
-    }
-
-    event.attendingUsers.push({ userId: user._id, username: user.username });
+    event.attendingUsers.splice(attendingUserIndex, 1);
     event.attendingCounter = event.attendingUsers.length;
-    await event.save(); 
+    await event.save();
 
-    res.json({ msg: 'User and event updated successfully' });
+    res.json({ msg: 'Event removed from user eventsAttending and event attendingUsers' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' });
@@ -227,7 +236,10 @@ app.put('/post/:eventId/:userId', async (req, res) => {
 
 
 
-//a post request
+
+
+
+
 
 app.post('/post', uploadMiddleware.single('file'),
   [

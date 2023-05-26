@@ -61,20 +61,33 @@ export default function Userprofile() {
 
 //////////////////////////////////////////for already created posts////////////////////////////////////////////////////////////////
 
-  useEffect(() => {
-    const fetchAttendingEvents = async () => {
-      try {
-        if (userInfo?.eventsAttending) {
-          setAttendingEvents(userInfo.eventsAttending);
+useEffect(() => {
+  const fetchAttendingEvents = async () => {
+    try {
+      if (userInfo?.eventsAttending) {
+        const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
+        const response = await fetch('http://localhost:8000/post', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ eventIds: attendingEventIds })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-      } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
+
+        const attendingEventsData = await response.json();
+        setAttendingEvents(attendingEventsData);
       }
-    };
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
 
-    fetchAttendingEvents();
-  }, [userInfo]);
-
+  fetchAttendingEvents();
+}, [userInfo]);
 
 
 
