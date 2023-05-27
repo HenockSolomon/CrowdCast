@@ -150,11 +150,11 @@ app.get('/userprofile', async (req, res) => {
 
 
 app.put('/post/:eventId/:userId', async (req, res) => {
-  try {
-    const user = await User.findOne({ _id: req.params.userId });
-    if (!user) {
+  try { 
+    const user = await User.findOne({ _id: req.params.userId }); 
+    if (!user) { 
       return res.status(404).send({ msg: 'User not found' });
-    }
+    } 
 
     const eventId = req.params.eventId;
     const eventExists = user.eventsAttending.some((event) => event._id.toString() === eventId);
@@ -184,7 +184,7 @@ app.put('/post/:eventId/:userId', async (req, res) => {
       user: {
         username: user.username,
         userId: user._id,
-      },
+      }, 
       post: {
         title: event.title,
         postId: event._id,
@@ -198,7 +198,31 @@ app.put('/post/:eventId/:userId', async (req, res) => {
   }
 });
 
- 
+
+
+app.get('/post/:eventId/:userId', async (req, res) => {
+  
+  const Id = req.params.userId
+  try {
+    let user = await User.findOne({ _id : Id});
+    res.json(user.eventsAttending);
+    
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Internal Server Error' });
+  }
+
+});
+
+
+
+
+
+
+
+
+
 
 app.delete('/post/:eventId/:userId', async (req, res) => {
   try {
@@ -335,7 +359,7 @@ app.put('/post/:id', async (req, res) => {
 
 
 
-// app.post('/userprofile/eventsAttending', async (req, res) => {
+// app.post('/userprofile/eventsAttending', async (req, res) => { 
 //   try {
 //     // Get the user's ID and event details from the request body
 //     const { userID, postID, title } = req.body;

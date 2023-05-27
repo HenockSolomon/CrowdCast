@@ -12,9 +12,9 @@ export default function CreatePost() {
     const [title,setTitle] = useState('');
     const [numberOfPeople,setNumberOfPeople] = useState('');
     const [postCode,setPostCode] = useState('');
-    const [dateTime,setDateTime] = useState('');
+    const [dateTime,setDateTime] = useState(''); 
     const [eventType,setEventType] = useState('');
-    const [privetPublic,setPrivetPublic] = useState('');
+    const [privatePublic,setPrivatePublic] = useState('');
     const [coverImg,setCoverImg] = useState('');
     const [summary,setSummary] = useState('');
     const [content,setContent] = useState('');
@@ -31,7 +31,7 @@ export default function CreatePost() {
         data.set('eventType', eventType);
         data.set('coverImg', coverImg);
 
-        data.set('privetPublic', privetPublic);
+        data.set('privatePublic', privatePublic);
         data.set('summary', summary);
         data.set('content', content);
         data.set('file', file[0]);
@@ -60,32 +60,25 @@ export default function CreatePost() {
 
 
     return (
-        <div>
+        <div >
              <Navbar />
-            <h1>Create Post</h1>
-
-
+           
+<div className="create-post-cont">
+ <h1 className="display-4">Here you can create your events</h1>
         <form onSubmit={createNewPost} className="create-post-form">
             <input type="title"
                     placeholder={'Title'}
                     value={title}
                     onChange={e => setTitle(e.target.value)} 
                     className="input-field"/>
-             <input type="number"
-                    placeholder={'number of peoples'}
-                    value={numberOfPeople} 
-                    onChange={e => setNumberOfPeople(e.target.value)} 
-                    className="input-field"/>
+
+                
              <input type="text"
                     placeholder={'Post Code'}
                     value={postCode}
                     onChange={e => setPostCode(e.target.value)} 
-                    className="input-field"/>
-            <input type="datetime-local"
-                    placeholder={'Date and Time'}
-                    value={dateTime}
-                    onChange={e => setDateTime(e.target.value)} 
-                    className="input-field"/>
+                    className="input-field "/>             
+     
             <select
                     value={eventType}
                     onChange={e => setEventType(e.target.value)}
@@ -101,8 +94,8 @@ export default function CreatePost() {
             </select>
 
             <select
-                    value={privetPublic}
-                    onChange={e => setPrivetPublic(e.target.value)}
+                    value={privatePublic}
+                    onChange={e => setPrivatePublic(e.target.value)}
                     className="input-field select" >
                     <option value="">Select event for </option>
                     <option value="family/friends">For close family/friends</option>
@@ -117,14 +110,25 @@ export default function CreatePost() {
             </select>
 
            
-            
+            <div className="datetime-nums">           
+             <input type="number"
+                    placeholder={'number of peoples'}
+                    value={numberOfPeople} 
+                    onChange={e => setNumberOfPeople(e.target.value)} 
+                    className="input-field nums"/>
+            <input type="datetime-local"
+                    placeholder={'Date and Time'}
+                    value={dateTime}
+                    onChange={e => setDateTime(e.target.value)} 
+                    className="input-field datetime"/>
+        </div>
             <input type="file"
                     onChange={ev => setFiles(ev.target.files)} 
                     className="input-field"/>
             <Editor value={summary}  onChange={setSummary} className="editor" />
-            <button style={{marginTop:'5px'}} className="submit-btn">Create post</button>
+            <button style={{marginTop:'5px'}} className="submit-btn btn">Create Event</button>
         </form>
-
+        </div>
         </div>
     )
 }

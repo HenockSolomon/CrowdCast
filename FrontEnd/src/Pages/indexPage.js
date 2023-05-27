@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Post from "../posts";
-import HomePage from "../HomePage";
 import '../App.css';
 
 export default function IndexPage() {

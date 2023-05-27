@@ -108,7 +108,7 @@ export default function PostPage() {
           <img src={`http://localhost:8000/${post.coverImg}`} alt={post.title} />
         </div>
         <div>
-          Location is at: {post.postCode}, it is a {post.eventType} {post.privetPublic} event
+          Location is at: {post.postCode}, it is a {post.eventType}  {post.privatePublic} event
         </div>
         <div>
           Date of the event: {post.dateTime}, for {post.numberOfPeople} people

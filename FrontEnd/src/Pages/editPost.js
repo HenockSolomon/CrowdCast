@@ -10,7 +10,7 @@ export default function EditPost() {
   const [dateTime, setDateTime] = useState("");
   const [summary, setSummary] = useState("");
   const [eventType, setEventType] = useState("");
-  const [privetPublic, setPrivetPublic] = useState("");
+  const [privatePublic, setPrivatePublic] = useState("");
   const [coverImg, setCoverImg] = useState("");
   const [redirect, setRedirect] = useState(false);
 
@@ -29,7 +29,7 @@ export default function EditPost() {
         setDateTime(postData.dateTime);
         setSummary(postData.summary);
         setEventType(postData.eventType);
-        setPrivetPublic(postData);
+        setPrivatePublic(postData);
         setCoverImg(postData.coverImg);
       })
       .catch((error) => {
@@ -47,7 +47,7 @@ export default function EditPost() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title, postCode, numberOfPeople, dateTime,eventType,privetPublic, coverImg, summary}),
+        body: JSON.stringify({ title, postCode, numberOfPeople, dateTime,eventType,privatePublic, coverImg, summary}),
       });
 
       if (response.ok) {
@@ -105,11 +105,11 @@ export default function EditPost() {
             onChange={(e) => setDateTime(e.target.value)}
             className="input-field"
           /><br/>
-      <label htmlFor="privetPublic">Event is for:</label><br/>
+      <label htmlFor="privatePublic">Event is for:</label><br/>
       <select
-        id="privetPublic"
-        value={privetPublic}
-        onChange={(e) => setPrivetPublic(e.target.value)}
+        id="privatePublic"
+        value={privatePublic}
+        onChange={(e) => setPrivatePublic(e.target.value)}
         className="input-field"
       >
        

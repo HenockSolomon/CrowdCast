@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './HeaderPublic';
-import About from './Pages/AboutUs';
 import CreatePost from './Pages/CreatePost';
 import LoginSignup from './Pages/LoginSignup';
 import UserProfile from './Pages/UserProfile';
 
-import HomePage from './HomePage';
 import { UserContextProvider } from './Props/UserInfo';
 import PostPage from "./Pages/postPage";
 import EditPost from "./Pages/editPost";
@@ -26,7 +24,6 @@ function App() {
         <Routes>
             <Route path="/" element={<Layout />} >
               <Route index element={<IndexPage />} />
-              <Route path="/About" element={<About />} />
               <Route path="/CreatePost" element={<CreatePost />} />
               <Route path="/LoginSignup" element={<LoginSignup />} />
               <Route path="/UserProfile" element={<UserProfile />} />

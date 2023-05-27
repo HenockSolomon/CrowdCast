@@ -36,11 +36,11 @@ export default function Navbar() {
                 <li>
                   <span className="welcome">Welcome {username}</span>
                 </li>
-                <li>
-                  <Link to="/" onClick={handleLogout}>
+                <button>
+                  <Link to="/" onClick={handleLogout} >
                     Logout
                   </Link>
-                </li>
+                </button>
               </ul>
             </>
           ) : (

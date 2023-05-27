@@ -35,30 +35,34 @@ export default function Home() {
   return (
     <div>
       <Navbar />
-      <div className="containerHome">
+      <div className="containerHome after-contain-home">
         <div className="headingSpace">
           {username ? (
-            <div className="cont">
-              <div className="coverImgContainer">
-               
+            <div className="after-username-cont"> 
+            
+              <div className=" after-username">
+             
               </div>
-              <div className="headingContent">
-                <h1>Hello {username}: here are your feeds
-                Find activities you want</h1>
-              </div>
+             
             </div>
-          ) : (
-            <div className="cont">
+          ) : ( 
+            <div className="cont before-log">
               <div className="coverImgContainer">
                 <img
-                  src="https://images.unsplash.com/photo-1625043187309-49e34491916b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80"
+                  src="https://plus.unsplash.com/premium_photo-1661270480589-ef777cebef1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
                   className="coverImg"
                   alt="talk in a walk"
                 />
+              
               </div>
               <div className="headingContent">
-                <h1>Welcome to Crowd Cast</h1>
-                <h2>Join the Crowd Cast community - A platform for sharing events and exciting activities</h2>
+                <h1>Welcome to Crowd Cast</h1><br/><br/>
+                <h2>Join the Crowd Cast community today</h2>
+                <h3>A platform for sharing events and exciting activities</h3>
+
+
+                <i className='qoute'><p>  '- best moments are, 
+                the <br/>ones we share with others'</p></i>
               </div>
             </div>
           )}

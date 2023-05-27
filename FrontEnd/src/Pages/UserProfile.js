@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../HeaderPublic';
-
+import axios from 'axios';
 export default function Userprofile() {
   const [username, setUsername] = useState('');
   const [title, setTitle] = useState('');
@@ -57,44 +57,42 @@ export default function Userprofile() {
 
   useEffect(() => {
     const fetchAttendingEvents = async () => {
-      
-        try {
-          if (userInfo?.eventsAttending) {
-            const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
-            const attendingEventsData = [];
-      
-            for (const eventId of attendingEventIds) {
-              const response = await fetch(`http://localhost:8000/post/${eventId}/`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              });
-      
-              if (!response.ok) {
-                throw new Error('Network response was not ok');
-              }
-      
-              const attendingEventData = await response.json();
-              attendingEventsData.push(attendingEventData);
+      try {
+        if (userInfo?.eventsAttending) {
+          const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
+          const updatedAttendingEventsData = [];
+  
+          for (const eventId of attendingEventIds) {
+            const response = await axios.get(`http://localhost:8000/post/${eventId}/${userInfo.id}`);
+            
+            if (response.status !== 200) {
+              throw new Error('Failed to fetch attending event data');
             }
-      
-            // Ensure the correct property name is used for the postId
-            const attendingEventsWithId = attendingEventsData.map(event => ({
-              postId: event._id, // Replace `_id` with the correct property name
-              title: event.title // Replace `title` with the correct property name
-            }));
-      
-            setAttendingEvents(attendingEventsWithId);
-          }
-        } catch (error) {
-          console.error('There was a problem with the fetch operation:', error);
-        }
-      
-    };
+            const eventData = response.data
+         
+           const updatedAttendingEventsData = eventData.map(event=> ({
+            postId: event._id, // Replace `_id` with the correct property name
+            postTitle: event.title // Replace `title` with the correct property name
+          }));
 
+            
+  
+           console.log(updatedAttendingEventsData, '')
+          setAttendingEvents(updatedAttendingEventsData);
+          }
+          console.log(updatedAttendingEventsData, '1')
+          
+        }
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+      }
+    };
+  
     fetchAttendingEvents();
   }, [userInfo]);
+  
+  
+  
 
   const handleCancelEvent = async (eventId) => {
     try {
@@ -125,48 +123,54 @@ export default function Userprofile() {
     }
   };
 
-  return (
-    <div>
-      <Navbar />
-      <div className="container">
-        <h1>This is {username}'s profile page.</h1>
+ return (
+  <div>
+    <Navbar />
+    <div className="container-userprofile">
+      <h1></h1>
 
-        <div className="posted-events">
-          <h2>Here are your Posted Events:</h2>
-          {postedEvents.length > 0 ? (
-            postedEvents.map(event => (
+      <div className="posted-events ">
+        <h1 className='display-5'>Here are event you created </h1>
+        {/* Event Created section */}
+        {postedEvents.length > 0 ? (
+          postedEvents.map(event => (
+            <Link key={event._id} to={`/post/${event._id}`}>
+              <div>{event.title}</div>
+            </Link>
+          ))
+        ) : (
+          <>
+            <p>Hi {username}. You have no posted events.</p>
+            <Link to="/">
+              <p>
+                Please visit the <b>home page</b> to see any events you might be interested in :)
+              </p>
+            </Link>
+          </>
+        )}
+      </div>
+      
+            <div className="attended-events">
+        <h1 className='display-5'>Here are you attending events</h1>
+     
+        {attendingEvents.length > 0 ? (
+          attendingEvents.map(event => (<div className='attending-posts-cont'>
+            <div key={event.postId} className='attending-posts'>
               <Link key={event._id} to={`/post/${event._id}`}>
-                <div>{event.title}</div>
-              </Link>
-            ))
-          ) : (
-            <>
-              <p>Hi {username}. You have no posted events.</p>
-              <Link to={'/'}>
-                <p>
-                  Please visit the <b>home page</b> to see any events you might be interested in :)
-                </p>
-              </Link>
-            </>
-          )}
-        </div>
-
-        <div className="attended-events">
-          <h2>Attending Events</h2>
-          {attendingEvents.length > 0 ? (
-            attendingEvents.map(event => (
-              <div key={event.postId}>
-                <Link to={`/post/${event.postId}`}>
-                  <div>{event.title}</div>
-                </Link>
-                <button onClick={() => handleCancelEvent(event.postId)}>Cancel Event</button>
-              </div>
-            ))
-          ) : (
-            <p>No attended events</p>
-          )}
-        </div>
+              <div className='attending-post-title'>{event.postTitle}</div>
+            </Link><button onClick={() => handleCancelEvent(event.postId)} className='btn cancle-event'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
+  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+</svg> Cancel </button>
+            </div>
+         </div> ))
+        ) : (
+          <p>No attended events</p>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
+
 }

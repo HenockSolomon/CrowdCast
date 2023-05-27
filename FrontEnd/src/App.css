@@ -1,7 +1,7 @@
 * {
   text-decoration: none;
-  color: rgb(3, 3, 108);
-  
+  text-decoration: none !important;
+  color: #032c47d7 !important;
 }
 
 
@@ -31,54 +31,92 @@
   font-family: Arial, sans-serif;
 }
 
-.navbarMenu li .CreatePost,
-.navbarMenu li .loginsignup,
-.navbarMenu li .userprofile,
-.navbarMenu li .logout {
-  background-color: rgb(135, 187, 204);
+
+.navbarMenu li .logout,.loginsignup  {
+  background-color: #a4b770 !important;
   padding: 15px;
   border-radius: 7px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.39);
+  width: 100px !important;
 }
 
-.navbarMenu li .LoginSignup:hover,
-.navbarMenu li .CreatePost:hover,
-.navbarMenu li .logout:hover,
-.navbarMenu li .userprofile:hover {
-  background-color: rgb(79, 107, 117);
-  color: white;
+.navbarMenu li .logout:hover, .loginsignup:hover {
+  background-color: #778451 !important;
+ 
 }
 
 .navbarMenu li .about:hover {
   color: black;
   box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.39);
 }
-
+.create-event, .user-profile{
+  font-size: large;
+  font-weight: bold;
+}
+.nav-container{
+  display: flex;
+  gap: 20px;
+}
+.create-event:hover, .user-profile:hover{
+text-decoration: underline !important;
+}
 
 .containerHome {
-  width: 100%;
+  width: 95%;
   height: 100px;
+  margin: 0 auto;
+  margin-bottom: 450px;
+  padding: 10px;
   
 }
 
 .containerHome .headingSpace .cont {
-  margin-top: 10px;
-  
-  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.39);
+  margin-top: 50px;
+  border-radius: 10px;
+  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.5);
   display: flex;
-  gap: 10%;
+  gap: 3%;
+}
+.containerHome .headingSpace .after-username {
+  height: 450px;
+  background-image: url("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 50px;
+  border-radius: 10px;
 }
 
+.after-text{
+color:white !important;
+position: relative;
+margin:40px;
+top:200px;
+left:300px
+}
+  .containerHome .headingSpace .after-username .after-login{
+  object-fit: cover;
+  width: 100%;
+}
 .containerHome .headingSpace .coverImgContainer .coverImg {
-  height: 250px;
-  width: 350px;
+  height: 500px;
+  width:800px; 
+  margin: 0 auto;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.39);
-  margin-left: 100px;
-  margin-bottom: 10px;
+ 
+  border-radius: 10px;
+  margin-bottom: 0px;
+  align-items: center;
+ 
 }
-
+.qoute{
+  float: right;
+  margin-right: 30px;
+}
 .containerHome .headingSpace .cont .headingContent {
-  display: flexbox;
+ 
+  margin-top: 100px !important;
+  margin-right: 10px ;
 }
 
 @media (max-width: 650px) {
@@ -114,10 +152,12 @@
   padding: 20px;
   justify-content: center;
   align-items: center;
-  
- 
-
+  margin-top: 10px;
+  position: relative;
 }
+
+
+
 .loading{
   height: 10vh;
 }
@@ -127,6 +167,28 @@
 }
 .card{
   height: 550px;
+  border: 1px solid #a4b770;
+}
+.before{
+  background-color: #a4b770 !important;
+ width: 40%;
+ height: 80px;
+ margin-left: 5%;
+ align-items: center;
+justify-content: center;
+border: none !important;
+
+}
+.before:hover{
+  background-color: #808f56 !important;
+}
+.btn{
+  color: #032c47d7 !important;
+font-size: 20px !important;
+font-weight: bold !important;
+}
+.attend-detail-container{
+  
 }
 /* 
 .post {
@@ -243,7 +305,7 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 padding: 40px;
-background-color: #fff;
+background-color: #a4b770;
 border-radius: 10px;
 box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 margin-top: 20px;
@@ -259,7 +321,7 @@ margin-top: 20px;
 }
 input,
 button {
-width: 40%;
+width: 100%;
 padding: 10px;
 margin: 10px 0;
 border-radius: 5px;
@@ -269,8 +331,14 @@ border: none;
   margin: 0 auto;
   padding : 10px;
   display: block;
-
+border: 1px solid black !important;
+width: 100%;
+background-color: #ffffff;
 }
+
+.log-in:hover, .sign-up:hover{
+  background-color: #b7cb7e;
+} 
 
 button {
 background-color: #868686;
@@ -319,16 +387,22 @@ font-size: large;
 
 margin-bottom: 10px;
 }
-
+.create-post-cont{
+  width: 50%;
+  margin: 0 auto;
+  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.5);
+  margin-top: 20px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20px;
+}
 .create-post-form {
-display: flex;
-flex-direction: column;
-max-width: 500px;
-margin: 0 auto;
-padding: 20px;
+display: block !important;
+margin-left: 10%;
+
 }
 .quill{
-  width: 85%;
+  width: 80%;
 }
 .input-field {
 width: 80%;
@@ -337,9 +411,13 @@ padding: 10px;
 border: 1px solid #ccc;
 border-radius: 4px;
 font-size: 16px;
+
 }
-.select {
-width: 85%;
+.datetime-nums{
+  display: flex;
+  width: 80%;
+  gap: 10px;
+
 }
 
 .file-input {
@@ -351,13 +429,14 @@ margin-bottom: 10px;
 }
 
 .submit-btn {
-background-color: #007bff;
+  background-color: #a4b770 !important;
 color: #fff;
 padding: 10px 20px;
 border: none;
 border-radius: 4px;
 font-size: 16px;
 cursor: pointer;
+width: 80%;
 }
 
 .post {
@@ -505,15 +584,21 @@ color: #888;
 
 
 /* post page css */
-/* app.css */
+.container-userprofile{
+  margin-top: 100px;
+  margin: 100px;
+  width: 90%;
+}
 
 /* Styles for posted events */
 .posted-events {
   float: left;
-  width: 40%;
+  width: 47%;
   margin-bottom: 20px;
-  background-color: rgb(225, 219, 219);
+  background-color: #a4b770 !important;
   padding: 10px;
+  max-height: 50%;
+  overflow-y: scroll;
 }
 
 .posted-events h2 {
@@ -539,9 +624,11 @@ color: #888;
 /* Styles for attended events */
 .attended-events {
   float: right;
-  width: 50%;
+  width: 47%;
   margin-bottom: 20px;
-  background-color: lightblue;
+  background-color: #a4b770 !important;
+  max-height: 50%;
+  overflow-y: scroll;
   padding: 10px;
 }
 
@@ -551,20 +638,66 @@ color: #888;
 }
 
 .attended-events a {
-  display: block;
+   width: 70%;
   color: #333;
   text-decoration: none;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 15px;
   border-radius: 4px;
   background-color: #f5f5f5;
   transition: background-color 0.3s ease;
+  height: 50%;
+  margin-top: 10px;
+  
 }
 
-.attended-events a:hover {
-  background-color: #d7d6d6;
+.attending-posts-cont {
+ 
+  border-radius: 100px !important;
+ 
 }
+
+.attending-posts {
+  display: flex;justify-content: space-evenly;
+}
+
+
+
+.cancle-event{
+
+  border: 1px solid red;
+  color: #fff;
+  cursor: pointer;
+  width: 20%;
+  margin: 10px;
+  height: 50%;
+  
+}
+
+.cancle-event:hover{
+  background-color: #c85959;
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .footer {
+  margin-top: 10vh;
   background-color: #babfbc;
   color: #000000;
   padding: 30px 0;
@@ -581,7 +714,7 @@ color: #888;
 }
 
 .footer-section {
-  flex: 0 0 33.33%;
+  flex: 0 0 30%;
   margin-bottom: 30px;
 }
 
