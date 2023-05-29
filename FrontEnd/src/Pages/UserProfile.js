@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../HeaderPublic';
 import axios from 'axios';
+
 export default function Userprofile() {
   const [username, setUsername] = useState('');
   const [title, setTitle] = useState('');
@@ -69,18 +70,18 @@ export default function Userprofile() {
               throw new Error('Failed to fetch attending event data');
             }
             const eventData = response.data
-         
+        
            const updatedAttendingEventsData = eventData.map(event=> ({
             postId: event._id, // Replace `_id` with the correct property name
             postTitle: event.title // Replace `title` with the correct property name
           }));
-
+ console.log(updatedAttendingEventsData)
             
   
-           console.log(updatedAttendingEventsData, '')
+           //console.log(updatedAttendingEventsData, 'userprofile updated Attending Events')
           setAttendingEvents(updatedAttendingEventsData);
           }
-          console.log(updatedAttendingEventsData, '1')
+         
           
         }
       } catch (error) {
@@ -93,35 +94,58 @@ export default function Userprofile() {
   
   
   
-
   const handleCancelEvent = async (eventId) => {
     try {
       if (userInfo?.eventsAttending) {
         const attendingEventIds = userInfo.eventsAttending.map(event => event._id);
-        const attendingEventsData = [];
+        const updatedAttendingEventsData = attendingEvents.filter(event => event.postId !== eventId);
+  
+        setAttendingEvents(updatedAttendingEventsData);
+  
+        
+          const response =  await axios.delete(`http://localhost:8000/post/${eventId}/${userInfo.id}`)
+          .then(() => this.setState({ status: 'Delete successful' }));
 
-      for (const eventId of attendingEventIds) {
-        const response = await fetch(`http://localhost:8000/post/${eventId}/${userInfo.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
+  // console.log(eventId)
+  // console.log(attendingEventIds)
+  // console.log(response)
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const attendingEventData = await response.json();
-        attendingEventsData.push(attendingEventData);
+  
+          // Handle the successful deletion if needed
+        
+  
+        const updatedUserInfo = { ...userInfo, eventsAttending: updatedAttendingEventsData };
+        setUserInfo(updatedUserInfo);
       }
-
-
-      setAttendingEvents(prevState => prevState.filter(event => event.postId !== eventId));
-    } }catch (error) {
+    } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }
   };
+  
+  // const handleConfirmDelete = async (_id) => {
+  //   try {
+  //     const response = await axios.delete(`http://localhost:8000/post/${_id}`, {
+  //       method: "DELETE"
+  //     });
+  //     const result = response.data;
+  
+  //     if (result) {
+  //       console.log('Post deleted successfully');
+  //     }
+  
+  //     const newPost = post.filter((post) => post._id !== _id);
+  //     setPost(newPost);
+  //     // Redirect to the home page or any other desired location
+  //     window.location.href = '/';
+  //   } catch (error) {
+  //     console.error('Error deleting post:', error);
+     
+  //     console.log(error);
+  //     window.location.href = '/';
+  //   }
+  // };
 
  return (
   <div>
@@ -156,13 +180,15 @@ export default function Userprofile() {
         {attendingEvents.length > 0 ? (
           attendingEvents.map(event => (<div className='attending-posts-cont'>
             <div key={event.postId} className='attending-posts'>
-              <Link key={event._id} to={`/post/${event._id}`}>
+              <Link  to={`/post/${event.postId}`}>
               <div className='attending-post-title'>{event.postTitle}</div>
-            </Link><button onClick={() => handleCancelEvent(event.postId)} className='btn cancle-event'>
+            </Link>
+            <button onClick={() => handleCancelEvent(event.postId)} className='btn cancle-event'>
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
   <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
-</svg> Cancel </button>
+</svg>        Cancel 
+            </button>
             </div>
          </div> ))
         ) : (

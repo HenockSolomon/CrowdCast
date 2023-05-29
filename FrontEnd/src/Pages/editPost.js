@@ -69,8 +69,8 @@ export default function EditPost() {
     <>
       <Navbar />
       <div className="edit-post-page">
-        <h1>Edit Post</h1>
-
+        <h1></h1>
+        <div className="edit-post-page-form">
         <form onSubmit={handleUpdatePost} className="edit-post-form">
           <label htmlFor="title">Title: </label><br/>
           <input
@@ -154,6 +154,7 @@ export default function EditPost() {
             Update Post
           </button>
         </form>
+        </div>
       </div>
     </>
   );

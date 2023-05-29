@@ -216,7 +216,7 @@ app.get('/post/:eventId/:userId', async (req, res) => {
 });
 
 
-
+ 
 
 
 
@@ -311,7 +311,7 @@ app.post('/post', uploadMiddleware.single('file'),
         res.json(postDoc);
       });
     } catch (error) {
-      console.error(error);
+      console.error(error); 
       res.status(500).json({ error: 'Server error' });
     }
   }

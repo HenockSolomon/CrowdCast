@@ -54,31 +54,6 @@ export default function Post({
     fetchUserProfile();
   }, [attendingUsers]);
 
-  const cancleAttendEvent = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel attendance.');
-      }
-
-      const profileResponse = await fetch('http://localhost:8000/userprofile', {
-        credentials: 'include',
-      });
-
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch user profile data');
-      }
-
-      const updatedUserInfo = await profileResponse.json();
-      setUserInfo(updatedUserInfo);
-      setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
-    } catch (error) {
-      console.error('There was a problem with the API request:', error);
-    }
-  };
 
   const toggleAttending = async () => {
     if (!username) {
@@ -87,34 +62,39 @@ export default function Post({
     }
 
     if (isAttending) {
-      cancleAttendEvent();
+      cancelAttendEvent();
     } else {
       try {
-        const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ attending: true }),
-        });
+        const response = await axios.put(`http://localhost:8000/post/${_id}/${userInfo.id}`);
 
         if (!response.ok) {
-          throw new Error('Failed to update attendee count.');
+          console.log(username, 'is already attending the event');
         }
 
         const profileResponse = await fetch('http://localhost:8000/userprofile', {
           credentials: 'include',
         });
-        
-        
-        const updateUserData = await axios.get(`http://localhost:8000/post/${_id}/${userInfo.id}`)
-
-        console.log(updateUserData.data);
-
-
 
         if (!profileResponse.ok) {
           throw new Error('Failed to fetch user profile data');
+        }
+
+        const updateUserData = await axios.get(`http://localhost:8000/post/${_id}/${userInfo.id}`);
+        console.log(updateUserData.data);
+
+        const res = await axios.get(`http://localhost:8000/post/${_id}`);
+        const eventData = res.data;
+
+        console.log(eventData._id);
+
+        const matches = updateUserData.data.filter((event) => event._id === eventData._id);
+
+        if (matches.length > 0) {
+          // User has already attended this event, show "Cancel Attend" button
+          console.log('Event matched in the user\'s attended events');
+        } else {
+          // User hasn't attended this event, show "Attend" button
+          console.log('Event not found in the user\'s attended events');
         }
 
         const updatedUserInfo = await updateUserData.json();
@@ -126,14 +106,33 @@ export default function Post({
     }
   };
 
-  // const toggleSummary = () => {
-  //   setShowFullSummary(!showFullSummary);
-  // };
-
-  // const displaySummary =
-  //   summary.length <= MAX_SUMMARY_LENGTH || showFullSummary
-  //     ? summary
-  //     : `${summary.substring(0, MAX_SUMMARY_LENGTH)}...`;
+  
+  const cancelAttendEvent = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to cancel attendance.');
+      }
+  
+      const profileResponse = await fetch('http://localhost:8000/userprofile', {
+        credentials: 'include',
+      });
+  
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch user profile data');
+      }
+  
+      const updatedUserInfo = await profileResponse.json();
+      setUserInfo(updatedUserInfo);
+      setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
+    } catch (error) {
+      console.error('There was a problem with the API request:', error);
+    }
+  };
+  
 
   const currentDate = new Date();
   const eventDate = new Date(dateTime);
@@ -142,15 +141,15 @@ export default function Post({
   if (isEventExpired) {
     return null; // Skip rendering the post if it has already passed
   }
-
+  
   return (
     <div className="CardGroup entire col-md-5">
-       <Link to={`/post/${_id}`}>
+       
       <div className="card">
-        <img className="card-img-top custom-card-image " src={`http://localhost:8000/${coverImg}`} alt={title} />
+      <Link to={`/post/${_id}`}><img className="card-img-top custom-card-image " src={`http://localhost:8000/${coverImg}`} alt={title} /></Link>
         <div className="card-body">
-          <h2 className="card-title">
-            <Link to={`/post/${_id}`}>{title}</Link>
+          <Link to={`/post/${_id}`}>
+          <h2 className="card-title">{title}
           </h2>
           <p className="card-text">
             <span className="text-muted">by: @{author?.username}</span> At: <time>  {formatISO9075(new Date(createdAt))}</time>
@@ -194,12 +193,12 @@ export default function Post({
                 )}
               </>
             )} */}
-          </p>
+          </p></Link>
           <div className='attend-detail-container'>
             {username ? (
               <div >
                 <button
-                  className={` before btn btn-primary attending-btn${isAttending ? ' active' : ''}`}
+                  className={` before btn btn-primary attending-btn${isAttending ? 'btn-cancel' : 'btn-attend'}`}
                   onClick={toggleAttending}
                 >
                   {isAttending ? 'Cancel Attending' : 'Attend'}
@@ -219,7 +218,7 @@ export default function Post({
           </div>
         </div>
       </div>
-      </Link>
+      
     </div>
     
   );

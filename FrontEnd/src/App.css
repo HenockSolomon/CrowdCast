@@ -85,6 +85,7 @@ text-decoration: underline !important;
   background-position: center;
   margin-top: 50px;
   border-radius: 10px;
+  box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .after-text{
@@ -265,7 +266,38 @@ font-weight: bold !important;
   font-size: 14px;
   color: #888;
 } */
+.post-page{
+  width: 70% !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin-top: 20px !important;
+}
+.post-page-cont{
+  
+}
+.edit-post-btn , .delete-post-btn{
+  background-color: #a4b770; ;
+}
+.edit-post-btn:hover , .delete-post-btn:hover{
+  background-color: #707c4c;
+}
 
+
+.edit-post-page{
+width:45%;
+
+margin: 0 auto !important;
+
+align-items: center !important;
+justify-content: center !important;
+box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.39);
+border: #a4b770; ;
+margin-bottom: 15px;
+}
+.edit-post-page-form{
+  margin-left: 10%;
+margin-top: 30px;
+  padding-left: 10px;
+}
 
 
 @media (min-width: 651px) and (max-width: 1024px) {
@@ -441,7 +473,7 @@ width: 80%;
 
 .post {
 display: flex;
-box-shadow: 0px 4px 4px rgba(36, 36, 36, 0.1);
+box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.5);
 border-radius: 4px;
 padding: 20px;
 margin-bottom: 20px;
@@ -493,7 +525,7 @@ content: "";
 }
 
 .post-page {
-width: 500px;
+width: 600px;
 margin: 0 auto;
 padding: 20px;
 }
@@ -597,7 +629,7 @@ color: #888;
   margin-bottom: 20px;
   background-color: #a4b770 !important;
   padding: 10px;
-  max-height: 50%;
+  max-height:  500px;
   overflow-y: scroll;
 }
 
@@ -627,7 +659,7 @@ color: #888;
   width: 47%;
   margin-bottom: 20px;
   background-color: #a4b770 !important;
-  max-height: 50%;
+  max-height: 500px;
   overflow-y: scroll;
   padding: 10px;
 }
@@ -698,7 +730,7 @@ color: #888;
 
 .footer {
   margin-top: 10vh;
-  background-color: #babfbc;
+  background-color: #a4b770;
   color: #000000;
   padding: 30px 0;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.39);
