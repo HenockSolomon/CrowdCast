@@ -22,7 +22,6 @@ export default function Post({
 }) {
   const [username, setUsername] = useState('');
   const [userInfo, setUserInfo] = useState(null);
-  // const [showFullSummary, setShowFullSummary] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
 
   useEffect(() => {
@@ -62,64 +61,66 @@ export default function Post({
     }
 
     if (isAttending) {
-      cancelAttendEvent();
+      
     } else {
       try {
         const response = await axios.put(`http://localhost:8000/post/${_id}/${userInfo.id}`);
 
         if (!response.ok) {
           console.log(username, 'is already attending the event');
+          
         }
 
-        const profileResponse = await fetch('http://localhost:8000/userprofile', {
-          credentials: 'include',
-        });
-
-        if (!profileResponse.ok) {
-          throw new Error('Failed to fetch user profile data');
-        }
-
+        
         const updateUserData = await axios.get(`http://localhost:8000/post/${_id}/${userInfo.id}`);
-        console.log(updateUserData.data);
+        console.log(updateUserData.data , '75');
 
         const res = await axios.get(`http://localhost:8000/post/${_id}`);
         const eventData = res.data;
 
-        console.log(eventData._id);
+        console.log(eventData , '80');
 
         const matches = updateUserData.data.filter((event) => event._id === eventData._id);
 
         if (matches.length > 0) {
-          // User has already attended this event, show "Cancel Attend" button
+          
+           setIsAttending(true);
+           
+           
           console.log('Event matched in the user\'s attended events');
+          
         } else {
           // User hasn't attended this event, show "Attend" button
           console.log('Event not found in the user\'s attended events');
+          setIsAttending(false);
         }
-
-        const updatedUserInfo = await updateUserData.json();
+ const updatedUserInfo =  updateUserData.json();
+ console.log(updatedUserInfo , '97')
         setUserInfo(updatedUserInfo);
-        setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
+        
+         
+
+
       } catch (error) {
         console.error('There was a problem with the API request:', error);
       }
     }
   };
 
-  
   const cancelAttendEvent = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/post/${_id}/${userInfo.id}`, {
-        method: 'DELETE',
-      });
-  
+      const response =  await axios.delete(`http://localhost:8000/post/${_id}/${userInfo.id}`)
+      .then(() => this.setState({ status: 'Delete successful' }));
+  console.log(response);
+
       if (!response.ok) {
         throw new Error('Failed to cancel attendance.');
       }
   
-      const profileResponse = await fetch('http://localhost:8000/userprofile', {
+      const profileResponse = await axios.get('http://localhost:8000/userprofile', {
         credentials: 'include',
       });
+      console.log(profileResponse)
   
       if (!profileResponse.ok) {
         throw new Error('Failed to fetch user profile data');
@@ -127,11 +128,14 @@ export default function Post({
   
       const updatedUserInfo = await profileResponse.json();
       setUserInfo(updatedUserInfo);
-      setIsAttending(updatedUserInfo.attendingEvents.some((event) => event._id === _id));
+      setIsAttending(false);
+
     } catch (error) {
       console.error('There was a problem with the API request:', error);
     }
   };
+  
+ 
   
 
   const currentDate = new Date();
@@ -196,15 +200,25 @@ export default function Post({
           </p></Link>
           <div className='attend-detail-container'>
             {username ? (
-              <div >
-                <button
-                  className={` before btn btn-primary attending-btn${isAttending ? 'btn-cancel' : 'btn-attend'}`}
-                  onClick={toggleAttending}
-                >
-                  {isAttending ? 'Cancel Attending' : 'Attend'}
-                </button>
-                <Link to={`/post/${_id}`}><button className="btn before"> See Details</button></Link> 
-              </div>
+              <div>
+              <button
+                className={`before btn btn-primary attending-btn$`}
+                onClick={toggleAttending}
+              >
+                {isAttending ? (
+                  
+                    
+                   <div onClick={cancelAttendEvent}>
+                      Cancel Attending
+            
+                  </div>
+                
+                ) : (
+                  'Attend'
+                )}
+              </button>
+              <Link to={`/post/${_id}`}><button className="btn before">See Details</button></Link>
+            </div>
             ) : (<>
               <button className="btn before">
                 <Link to="/loginsignup"> Log in to attend</Link>
