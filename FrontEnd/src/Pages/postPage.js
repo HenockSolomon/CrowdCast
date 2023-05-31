@@ -101,14 +101,14 @@ export default function PostPage() {
         <div className="post-page-cont">
         <h1>{post.title}</h1>
         <time>{formatISO9075(new Date(post.createdAt))}</time>
-        <div className="author">by @{post.author.username}</div>
+        <div className="author">by: @{post.author.username}</div>
       
         
        
         <div className="image">
           <img src={`http://localhost:8000/${post.coverImg}`} alt={post.title} />
         </div>
-       
+        &nbsp;
         <div>
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
   <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
@@ -140,11 +140,10 @@ export default function PostPage() {
          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-info-square" viewBox="0 0 16 16">
     <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
     <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-  </svg> &nbsp;Additional information: 
+  </svg> &nbsp;
+  Additional information: <article  className="content" dangerouslySetInnerHTML={{ __html: post.summary }} /> 
 
-<div  className="content" dangerouslySetInnerHTML={{ __html: post.summary }} >
-
-</div>  
+  
         {editable && (
           <div className="edit-row">
             <Link className="edit-btn" to={`/edit/${post._id}`}> 

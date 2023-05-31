@@ -79,15 +79,16 @@ async function Login(ev) {
     credentials: 'include',
   });
   console.log(response);
-  navigate('/userprofile');
-  if (response.ok) {
+  if(!username || !password){
+    alert('Please enter a username and password');
+  }else if (response.ok) {
     response.json().then(userInfo => {
       setUserInfo(userInfo);
       setRedirect(true);
 
     });
     alert('Log in successful');
-    
+    navigate('/');
   } else {
     alert('wrong credentials');
     navigate('/loginsignup');
