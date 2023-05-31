@@ -144,7 +144,7 @@ app.get('/userprofile', async (req, res) => {
     console.error(error);
     res.status(500).json({ msg: 'Internal Server Error' });
   }
-});
+}); 
 
 
 

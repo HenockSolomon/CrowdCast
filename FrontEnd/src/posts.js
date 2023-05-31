@@ -23,6 +23,23 @@ export default function Post({
   const [username, setUsername] = useState('');
   const [userInfo, setUserInfo] = useState(null);
   const [isAttending, setIsAttending] = useState(false);
+  const [eventscollection, setEventsCollection] = useState([]);
+
+
+// useEffect (() => {
+//   async function fetchData () {
+// try{
+//   const eventData = await axios.get(`http://localhost:8000/post`)
+//   setEventsCollection (eventData.data)
+//   console.log(eventscollection)
+// }catch (e) {
+//   console.error('There was a problem with the API request:');
+// }
+//   }
+//   fetchData();
+// },[setEventsCollection])
+
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -35,12 +52,26 @@ export default function Post({
           throw new Error('Network response was not ok');
         }
 
-        const userInfo = await response.json();
-        setUserInfo(userInfo);
+        const userInformation = await response.json();
+        //console.log(userInformation)
+        setUserInfo(userInformation);
 
-        if (userInfo && userInfo.username) {
-          setUsername(userInfo.username);
-          setIsAttending(attendingUsers.some((user) => user.userId === userInfo._id));
+        if (userInformation && userInformation.username) {
+          setUsername(userInformation.username);
+          let userAttending = attendingUsers.filter((user) => user.userId === userInformation.id)
+          console.log(userAttending , '62')
+          // console.log(userInformation.id)
+          // console.log(attendingUsers[0].userId)
+          if (userAttending.length !== 0) {
+            setIsAttending(true);
+          }
+          else{
+            setIsAttending(false);
+          }
+          
+
+          //console.log(attendingUsers.map((user) => user.userId))
+          // console.log(attendingUsers.filter((user) => user.userId === userInformation._id), '63')
         } else {
           setUsername('');
           setIsAttending(false);
@@ -51,7 +82,7 @@ export default function Post({
     };
 
     fetchUserProfile();
-  }, [attendingUsers]);
+  }, [attendingUsers, setIsAttending]);
 
 
   const toggleAttending = async () => {
@@ -61,7 +92,7 @@ export default function Post({
     }
 
     if (isAttending) {
-      
+      cancelAttendEvent();
     } else {
       try {
         const response = await axios.put(`http://localhost:8000/post/${_id}/${userInfo.id}`);
@@ -78,7 +109,7 @@ export default function Post({
         const res = await axios.get(`http://localhost:8000/post/${_id}`);
         const eventData = res.data;
 
-        console.log(eventData , '80');
+        console.log(eventData , '81');
 
         const matches = updateUserData.data.filter((event) => event._id === eventData._id);
 
@@ -109,34 +140,33 @@ export default function Post({
 
   const cancelAttendEvent = async () => {
     try {
-      const response =  await axios.delete(`http://localhost:8000/post/${_id}/${userInfo.id}`)
-      .then(() => this.setState({ status: 'Delete successful' }));
-  console.log(response);
-
-      if (!response.ok) {
+      const response = await axios.delete(`http://localhost:8000/post/${_id}/${userInfo.id}`);
+      console.log(response);
+      setIsAttending(false);
+  
+      if (response.status !== 200) {
         throw new Error('Failed to cancel attendance.');
       }
   
       const profileResponse = await axios.get('http://localhost:8000/userprofile', {
         credentials: 'include',
       });
-      console.log(profileResponse)
   
-      if (!profileResponse.ok) {
+      if (profileResponse.status !== 200) {
         throw new Error('Failed to fetch user profile data');
       }
   
-      const updatedUserInfo = await profileResponse.json();
+      const updatedUserInfo = await profileResponse.data;
       setUserInfo(updatedUserInfo);
-      setIsAttending(false);
-
     } catch (error) {
       console.error('There was a problem with the API request:', error);
     }
   };
   
- 
   
+
+ 
+
 
   const currentDate = new Date();
   const eventDate = new Date(dateTime);
@@ -197,10 +227,21 @@ export default function Post({
                 )}
               </>
             )} */}
-          </p></Link>
+            <p>
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-balloon" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M8 9.984C10.403 9.506 12 7.48 12 5a4 4 0 0 0-8 0c0 2.48 1.597 4.506 4 4.984ZM13 5c0 2.837-1.789 5.227-4.52 5.901l.244.487a.25.25 0 1 1-.448.224l-.008-.017c.008.11.02.202.037.29.054.27.161.488.419 1.003.288.578.235 1.15.076 1.629-.157.469-.422.867-.588 1.115l-.004.007a.25.25 0 1 1-.416-.278c.168-.252.4-.6.533-1.003.133-.396.163-.824-.049-1.246l-.013-.028c-.24-.48-.38-.758-.448-1.102a3.177 3.177 0 0 1-.052-.45l-.04.08a.25.25 0 1 1-.447-.224l.244-.487C4.789 10.227 3 7.837 3 5a5 5 0 0 1 10 0Zm-6.938-.495a2.003 2.003 0 0 1 1.443-1.443C7.773 2.994 8 2.776 8 2.5c0-.276-.226-.504-.498-.459a3.003 3.003 0 0 0-2.46 2.461c-.046.272.182.498.458.498s.494-.227.562-.495Z"/>
+</svg>
+          {attendingUsers.length >0 ? ( `${attendingUsers.length} Person Attending This Event`
+          ) : ('No Person Attending This Event Yet') 
+          } 
+          </p> 
+          </p>
+         
+          </Link>
           <div className='attend-detail-container'>
             {username ? (
               <div>
+              
               <button
                 className={`before btn btn-primary attending-btn$`}
                 onClick={toggleAttending}
