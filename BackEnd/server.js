@@ -77,7 +77,6 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-  
 
 //this is post request to be checked on postman the user data inputs for login
 app.post('/login', async (req, res) => {
@@ -147,8 +146,6 @@ app.get('/userprofile', async (req, res) => {
 }); 
 
 
-
-
 app.put('/post/:eventId/:userId', async (req, res) => {
   try { 
     const user = await User.findOne({ _id: req.params.userId }); 
@@ -198,8 +195,6 @@ app.put('/post/:eventId/:userId', async (req, res) => {
   }
 });
 
-
-
 app.get('/post/:eventId/:userId', async (req, res) => {
   
   const Id = req.params.userId
@@ -214,15 +209,6 @@ app.get('/post/:eventId/:userId', async (req, res) => {
   }
 
 });
-
-
- 
-
-
-
-
-
-
 
 app.delete('/post/:eventId/:userId', async (req, res) => {
   try {
@@ -264,15 +250,6 @@ app.delete('/post/:eventId/:userId', async (req, res) => {
     res.status(500).json({ msg: 'Internal Server Error' });
   }
 });
-
-
-
-
-
-  
-
-
-
 
 app.post('/post', uploadMiddleware.single('file'),
   [
@@ -357,8 +334,6 @@ app.put('/post/:id', async (req, res) => {
   }
 });
 
-
-
 // app.post('/userprofile/eventsAttending', async (req, res) => { 
 //   try {
 //     // Get the user's ID and event details from the request body
@@ -412,12 +387,6 @@ app.put('/post/:id', async (req, res) => {
 //     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
-
-
-
-
-
-
  
 app.get('/post', async (req,res) => {
   res.json(
@@ -444,7 +413,6 @@ app.get('/post/:id', async (req, res) => {
   }
 });
 
-
 // handling deletion 
 app.delete('/post/:id', async (req, res) => {
   const postId = req.params.id;
@@ -457,13 +425,6 @@ app.delete('/post/:id', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while deleting the post' });
   }
 });
-
-
-
-
-
-
-
 
 app.post('/logout', (req, res) => {
   res.cookie('token','').json({ message:'logged out'}); 
