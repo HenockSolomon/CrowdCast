@@ -76,8 +76,7 @@ app.post('/signup', async (req, res) => {
     res.status(500).json({ msg: 'Error occurred while creating new user' });
   }
 }); 
- 
-  
+
 //this is post request to be checked on postman the user data inputs for login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
