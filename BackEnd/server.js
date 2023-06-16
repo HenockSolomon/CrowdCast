@@ -30,7 +30,7 @@ app.use('/middle', express.static(__dirname + '/middle'));
 (async () => {
   try {
     await mongoose.connect(process.env.SERVER_URI);
-    console.log('Connected to database');
+    console.log('Connected to database'); 
   } catch (error) {
     console.error(error);
   } 
