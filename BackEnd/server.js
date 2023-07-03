@@ -127,7 +127,7 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ msg: 'Internal Server Error' }); 
   }
 }); 
- 
+  
  
 // this is for userprofile only
 app.get('/userprofile', async (req, res) => {
